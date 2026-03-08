@@ -1,2 +1,7 @@
 server/node_modules
 server/quiz.db
+
+.idea/
+*.iml
+out/
+build/
