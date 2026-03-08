@@ -15,6 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.jetbrains.compose.resources.painterResource
+import org.mst_college.project.quiz.navigation.Screen
+import org.mst_college.project.quiz.screens.HomeScreen
+import org.mst_college.project.quiz.screens.JudgePanel
+import org.mst_college.project.quiz.screens.QuizScreen
+import org.mst_college.project.quiz.screens.SettingsScreen
+import org.mst_college.project.quiz.screens.WelcomeScreen
 
 import quiz.composeapp.generated.resources.Res
 import quiz.composeapp.generated.resources.compose_multiplatform
@@ -22,28 +28,17 @@ import quiz.composeapp.generated.resources.compose_multiplatform
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
-        }
+    var screen by remember { mutableStateOf(Screen.WELCOME) }
+
+    when (screen) {
+        Screen.WELCOME -> WelcomeScreen { screen = Screen.HOME }
+        Screen.HOME -> HomeScreen(
+            onQuiz = { screen = Screen.QUIZ },
+            onJudge = { screen = Screen.JUDGE },
+            onSettings = { screen = Screen.SETTINGS }
+        )
+        Screen.QUIZ -> QuizScreen()
+        Screen.JUDGE -> JudgePanel()
+        Screen.SETTINGS -> SettingsScreen()
     }
 }

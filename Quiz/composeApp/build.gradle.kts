@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 kotlin {
@@ -20,6 +22,9 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(compose.desktop.currentOs)
+
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -40,6 +45,14 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.mst_college.project.quiz"
             packageVersion = "1.0.0"
+            packageName = "QuizTournament"
+
+            packageVersion = "1.0.0"
+
+            windows {
+                shortcut = true
+                menuGroup = "Quiz Tournament"
+            }
         }
     }
 }
