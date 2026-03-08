@@ -25,6 +25,10 @@ kotlin {
             implementation(compose.desktop.currentOs)
 
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+
+            implementation(compose.materialIconsExtended)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
