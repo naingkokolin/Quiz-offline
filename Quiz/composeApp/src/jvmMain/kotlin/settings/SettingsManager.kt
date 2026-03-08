@@ -8,7 +8,10 @@ import java.io.File
 @Serializable
 data class Settings(
     val title: String = "Quiz Tournament",
-    val logoPath: String = "logo.png"
+    val logoPath: String = "logo.png",
+    val questionLimit: Int = 10,
+    val timerSeconds: Int = 60,
+    val isDarkMode: Boolean = true
 )
 
 object SettingsManager {

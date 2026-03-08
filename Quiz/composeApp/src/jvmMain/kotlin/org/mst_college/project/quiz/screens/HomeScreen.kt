@@ -1,14 +1,22 @@
 package org.mst_college.project.quiz.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlin.system.exitProcess
 
 @Composable
 fun HomeScreen(
@@ -16,31 +24,95 @@ fun HomeScreen(
     onJudge: () -> Unit,
     onSettings: () -> Unit
 ) {
+    // Background Gradient (Deep Blue to Dark)
+    val backgroundGradient = Brush.horizontalGradient(
+        colors = listOf(Color(0xFF0D47A1), Color(0xFF001233))
+    )
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundGradient)
+            .padding(50.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-
-        Button(
-            onClick = onQuiz,
-            modifier = Modifier.width(220.dp).height(50.dp),
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+        // --- Left Side: Logo & Title ---
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("Start Quiz", style = TextStyle(fontWeight = FontWeight.Bold))
+            // Logo Placeholder (မင်းဆီမှာ Logo ပုံရှိရင် Icon နေရာမှာ Image သုံးနိုင်ပါတယ်)
+            Icon(
+                imageVector = Icons.Default.EmojiEvents, // ဆုဖလားပုံ
+                contentDescription = "Logo",
+                modifier = Modifier.size(150.dp),
+                tint = Color(0xFFFFD700) // Gold Color
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "QUIZ MASTER",
+                color = Color.White,
+                fontSize = 48.sp,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = 2.sp
+            )
+
+            Text(
+                text = "Tournament Edition v1.0",
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 18.sp
+            )
         }
 
-        Spacer(Modifier.height(16.dp))
+        // --- Right Side: Menu Buttons ---
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            MenuButton("Start Quiz", Icons.Default.PlayArrow, Color(0xFF4CAF50), onQuiz)
+            MenuButton("Judge Panel", Icons.Default.Groups, Color(0xFF2196F3), onJudge)
+            MenuButton("Settings", Icons.Default.Settings, Color(0xFF607D8B), onSettings)
 
-        Button(onClick = onJudge, modifier = Modifier.width(220.dp)) {
-            Text("Judge Panel")
+            Divider(color = Color.White.copy(alpha = 0.2f), thickness = 1.dp, modifier = Modifier.width(280.dp).padding(vertical = 10.dp))
+
+            // Quit Button
+            MenuButton("Quit App", Icons.AutoMirrored.Filled.ExitToApp, Color(0xFFD32F2F), {
+                exitProcess(0)
+            })
         }
+    }
+}
 
-        Spacer(Modifier.height(16.dp))
-
-        Button(onClick = onSettings, modifier = Modifier.width(220.dp)) {
-            Text("Settings")
+@Composable
+fun MenuButton(
+    text: String,
+    icon: ImageVector,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.width(320.dp).height(65.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = color),
+        elevation = ButtonDefaults.elevation(defaultElevation = 10.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp)
+        ) {
+            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+            Spacer(modifier = Modifier.width(20.dp))
+            Text(
+                text = text,
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
