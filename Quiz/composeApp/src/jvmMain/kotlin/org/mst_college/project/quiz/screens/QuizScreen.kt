@@ -90,9 +90,9 @@ fun QuizScreen(onBack: () -> Unit) {
                     CircularTimer(
                         onFinish = {
                             isTimeUp = true
-                            SoundPlayer.play("end.wav")
+                            SoundPlayer.play("alarm.wav")
                         },
-                        playCountdown = { SoundPlayer.play("alarm10.wav") }
+                        playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
                     )
                 }
 
@@ -104,7 +104,7 @@ fun QuizScreen(onBack: () -> Unit) {
                         Button(
                             onClick = {
                                 showAnswer = true
-                                SoundPlayer.play("reveal.wav")
+//                                SoundPlayer.play("reveal.wav")
                             },
                             modifier = Modifier.height(50.dp).width(200.dp),
                             shape = RoundedCornerShape(25.dp),
