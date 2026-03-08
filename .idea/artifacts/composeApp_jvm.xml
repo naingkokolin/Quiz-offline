@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="composeApp-jvm">
+    <output-path>$PROJECT_DIR$/Quiz/composeApp/build/libs</output-path>
+    <root id="archive" name="composeApp-jvm.jar">
+      <element id="module-output" name="Quiz.composeApp.jvmMain" />
+    </root>
+  </artifact>
+</component>
