@@ -2,14 +2,12 @@ package org.mst_college.project.quiz.screens
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import model.Question
-import org.mst_college.project.quiz.ui.components.AnimatedQuestion
 import org.mst_college.project.quiz.ui.components.CircularTimer
 import utils.QuestionManager
 import utils.SoundPlayer
@@ -73,14 +70,12 @@ fun QuizScreen(onBack: () -> Unit) {
 
                 Spacer(Modifier.height(30.dp))
 
-                // --- မေးခွန်းပြသသည့်အပိုင်း (အချိန်ပြည့်ရင် ပျောက်သွားမယ်) ---
                 AnimatedVisibility(
                     visible = !isTimeUp,
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically()
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        // စာလုံးအရွယ်အစားကို 34.sp အထိ မြှင့်ထားပါတယ်
                         Text(
                             text = currentQ.question,
                             fontSize = 42.sp,
@@ -93,7 +88,6 @@ fun QuizScreen(onBack: () -> Unit) {
                     }
                 }
 
-                // --- အဖြေ ၄ ခု (စာလုံးကြီးကြီးနှင့် Box အကျယ်ကြီး) ---
                 Column(modifier = Modifier.widthIn(max = 850.dp)) {
                     QuizOption("A", currentQ.option_a, showAnswer, currentQ.correct_answer == "A")
                     QuizOption("B", currentQ.option_b, showAnswer, currentQ.correct_answer == "B")
@@ -203,7 +197,7 @@ fun QuizOption(letter: String, text: String, showAnswer: Boolean, isCorrect: Boo
             Spacer(Modifier.width(20.dp))
             Text(
                 text = text,
-                fontSize = 26.sp, // Option စာသားကို အကြီးကြီးလုပ်ထားတယ်
+                fontSize = 26.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = if (showAnswer && !isCorrect) Color.Gray else Color.White
             )
