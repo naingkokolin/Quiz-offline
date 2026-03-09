@@ -20,114 +20,148 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import model.Question
 import org.mst_college.project.quiz.ui.components.AnimatedQuestion
 import org.mst_college.project.quiz.ui.components.CircularTimer
+import utils.QuestionManager
 import utils.SoundPlayer
 
 @Composable
 fun QuizScreen(onBack: () -> Unit) {
+    val allQuestions = remember { mutableStateListOf<Question>() }
+    var currentQuestionIndex by remember { mutableStateOf(0) }
     var isStarted by remember { mutableStateOf(false) }
     var showAnswer by remember { mutableStateOf(false) }
     var isTimeUp by remember { mutableStateOf(false) }
-    var currentQuestionIndex by remember { mutableStateOf(1) } // မေးခွန်းနံပါတ်
 
-    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFF1A237E), Color(0xFF121212)))
+    LaunchedEffect(Unit) {
+        val loadedQuestions = QuestionManager.getAllQuestions()
+        if (loadedQuestions.isNotEmpty()) {
+            val shuffled = loadedQuestions.shuffled()
+            val limit = settings.SettingsManager.load().questionLimit
+            val limitedQuestions = if (shuffled.size > limit) shuffled.take(limit) else shuffled
+            allQuestions.addAll(limitedQuestions)
+        }
+    }
+
+    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFF0D47A1), Color(0xFF000000)))
 
     Box(modifier = Modifier.fillMaxSize().background(primaryGradient)) {
-        // --- Back Button ---
         IconButton(onClick = onBack, modifier = Modifier.padding(20.dp).align(Alignment.TopStart)) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
         }
 
-        Column(
-            modifier = Modifier.fillMaxSize().padding(40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (!isStarted) {
-                Button(
-                    onClick = {
-                        isStarted = true
-                        SoundPlayer.play("start.wav") // စတဲ့အသံ
-                    },
-                    modifier = Modifier.size(180.dp).clip(CircleShape),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4CAF50))
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                        Icon(Icons.Default.PlayArrow, contentDescription = null, size = 50.dp, tint = Color.White)
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White)
-                        Text("START QUIZ", color = Color.White, fontWeight = FontWeight.Bold)
-                    }
-                }
-            } else {
-                // --- Quiz Content (Start နှိပ်မှ ပေါ်မယ်) ---
+        if (allQuestions.isEmpty() && isStarted) {
+            Text("No questions found!", color = Color.White, modifier = Modifier.align(Alignment.Center))
+        } else if (isStarted && currentQuestionIndex < allQuestions.size) {
+
+            val currentQ = allQuestions[currentQuestionIndex]
+
+            Column(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 60.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Question Counter
                 Text(
-                    "Question #$currentQuestionIndex",
-                    fontSize = 18.sp,
-                    color = Color.Cyan,
-                    fontWeight = FontWeight.Bold
+                    "QUESTION ${currentQuestionIndex + 1} OF ${allQuestions.size}",
+                    fontSize = 20.sp,
+                    color = Color.Cyan.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 2.sp
                 )
 
-                Spacer(Modifier.height(10.dp))
-
-                AnimatedQuestion("What is SQL Injection?")
-
                 Spacer(Modifier.height(30.dp))
 
-                // Options
-                val correctAnswer = "C"
-                Column(modifier = Modifier.widthIn(max = 600.dp)) {
-                    QuizOption("A", "Encryption", showAnswer, correctAnswer == "A")
-                    QuizOption("B", "Firewall", showAnswer, correctAnswer == "B")
-                    QuizOption("C", "Database attack", showAnswer, correctAnswer == "C")
-                    QuizOption("D", "Protocol", showAnswer, correctAnswer == "D")
+                // --- မေးခွန်းပြသသည့်အပိုင်း (အချိန်ပြည့်ရင် ပျောက်သွားမယ်) ---
+                AnimatedVisibility(
+                    visible = !isTimeUp,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        // စာလုံးအရွယ်အစားကို 34.sp အထိ မြှင့်ထားပါတယ်
+                        Text(
+                            text = currentQ.question,
+                            fontSize = 42.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            lineHeight = 45.sp,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Spacer(Modifier.height(40.dp))
+                    }
                 }
 
-                Spacer(Modifier.height(40.dp))
-
-                // Timer (Show Answer နှိပ်ပြီးရင် ပျောက်သွားမယ်)
-                if (!showAnswer) {
-                    CircularTimer(
-                        onFinish = {
-                            isTimeUp = true
-                            SoundPlayer.play("alarm.wav")
-                        },
-                        playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
-                    )
+                // --- အဖြေ ၄ ခု (စာလုံးကြီးကြီးနှင့် Box အကျယ်ကြီး) ---
+                Column(modifier = Modifier.widthIn(max = 850.dp)) {
+                    QuizOption("A", currentQ.option_a, showAnswer, currentQ.correct_answer == "A")
+                    QuizOption("B", currentQ.option_b, showAnswer, currentQ.correct_answer == "B")
+                    QuizOption("C", currentQ.option_c, showAnswer, currentQ.correct_answer == "C")
+                    QuizOption("D", currentQ.option_d, showAnswer, currentQ.correct_answer == "D")
                 }
 
-                Spacer(Modifier.height(30.dp))
+                Spacer(Modifier.height(50.dp))
 
-                // --- Control Buttons Flow ---
-                Row {
-                    if (isTimeUp && !showAnswer) {
-                        Button(
-                            onClick = {
-                                showAnswer = true
-//                                SoundPlayer.play("reveal.wav")
+                // Timer or Control Buttons
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.height(200.dp)) {
+                    if (!showAnswer) {
+                        CircularTimer(
+                            totalTime = settings.SettingsManager.load().timerSeconds,
+                            key = currentQuestionIndex,
+                            onFinish = {
+                                isTimeUp = true
                             },
-                            modifier = Modifier.height(50.dp).width(200.dp),
-                            shape = RoundedCornerShape(25.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF9800))
-                        ) {
-                            Text("SHOW ANSWER", color = Color.White, fontWeight = FontWeight.Bold)
-                        }
+                            playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
+                        )
                     }
 
-                    if (showAnswer) {
-                        Button(
-                            onClick = {
-                                // Reset for next question
-                                showAnswer = false
-                                isTimeUp = false
-                                currentQuestionIndex++
-                            },
-                            modifier = Modifier.height(50.dp).width(200.dp),
-                            shape = RoundedCornerShape(25.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF2196F3))
-                        ) {
-                            Text("NEXT QUESTION", color = Color.White, fontWeight = FontWeight.Bold)
+                    // Show Answer / Next Buttons
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (isTimeUp && !showAnswer) {
+                            Button(
+                                onClick = { showAnswer = true },
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF9800)),
+                                modifier = Modifier.height(65.dp).width(280.dp),
+                                shape = RoundedCornerShape(32.dp),
+                                elevation = ButtonDefaults.elevation(10.dp)
+                            ) {
+                                Text("SHOW ANSWER", fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
+                            }
                         }
+
+                        if (showAnswer) {
+                            Button(
+                                onClick = {
+                                    if (currentQuestionIndex < allQuestions.size - 1) {
+                                        showAnswer = false
+                                        isTimeUp = false
+                                        currentQuestionIndex++
+                                        SoundPlayer.play("start.wav")
+                                    } else {
+                                        onBack()
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF2196F3)),
+                                modifier = Modifier.height(65.dp).width(280.dp),
+                                shape = RoundedCornerShape(32.dp)
+                            ) {
+                                Text(
+                                    if (currentQuestionIndex < allQuestions.size - 1) "NEXT QUESTION" else "FINISH QUIZ",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                StartButton {
+                    if (allQuestions.isNotEmpty()) {
+                        isStarted = true
+                        SoundPlayer.play("start.wav")
                     }
                 }
             }
@@ -137,11 +171,10 @@ fun QuizScreen(onBack: () -> Unit) {
 
 @Composable
 fun QuizOption(letter: String, text: String, showAnswer: Boolean, isCorrect: Boolean) {
-    // အဖြေမှန်ရင် အစိမ်း၊ မဟုတ်ရင် မှိန်သွားမယ်
     val backgroundColor = when {
-        showAnswer && isCorrect -> Color(0xFF2E7D32) // Dark Green
-        showAnswer && !isCorrect -> Color.White.copy(alpha = 0.1f) // Dimmed
-        else -> Color.White.copy(alpha = 0.15f) // Default
+        showAnswer && isCorrect -> Color(0xFF1B5E20) // Dark Green
+        showAnswer && !isCorrect -> Color.White.copy(alpha = 0.05f) // Dimmed
+        else -> Color.White.copy(alpha = 0.12f) // Default
     }
 
     val textColor = if (showAnswer && !isCorrect) Color.Gray else Color.White
@@ -150,29 +183,64 @@ fun QuizOption(letter: String, text: String, showAnswer: Boolean, isCorrect: Boo
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clip(RoundedCornerShape(12.dp)),
-        elevation = 0.dp,
+            .padding(vertical = 10.dp)
+            .heightIn(min = 70.dp),
+        shape = RoundedCornerShape(16.dp),
         backgroundColor = backgroundColor,
-        border = if (borderColor != Color.Transparent) androidx.compose.foundation.BorderStroke(2.dp, borderColor) else null
+        elevation = if (showAnswer && isCorrect) 12.dp else 0.dp,
+        border = if (showAnswer && isCorrect) androidx.compose.foundation.BorderStroke(3.dp, Color.Green) else null
     ) {
         Row(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(35.dp)
-                    .clip(CircleShape)
-                    .background(if (showAnswer && isCorrect) Color.Green else Color.White.copy(alpha = 0.2f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(letter, fontWeight = FontWeight.ExtraBold, color = if (showAnswer && isCorrect) Color.Black else Color.White)
-            }
-
+            Text(
+                text = "$letter:",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Black,
+                color = if (showAnswer && isCorrect) Color.Green else Color.Cyan
+            )
             Spacer(Modifier.width(20.dp))
+            Text(
+                text = text,
+                fontSize = 26.sp, // Option စာသားကို အကြီးကြီးလုပ်ထားတယ်
+                fontWeight = FontWeight.SemiBold,
+                color = if (showAnswer && !isCorrect) Color.Gray else Color.White
+            )
+        }
+    }
+}
 
-            Text(text, fontSize = 20.sp, color = textColor, fontWeight = FontWeight.Medium)
+@Composable
+fun StartButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .size(220.dp)
+            .clip(CircleShape),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xFF4CAF50),
+            contentColor = Color.White
+        ),
+        elevation = ButtonDefaults.elevation(12.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.PlayArrow,
+                contentDescription = "Start",
+                modifier = Modifier.size(80.dp)
+            )
+            Text(
+                "START QUIZ",
+                style = androidx.compose.ui.text.TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    letterSpacing = 2.sp
+                )
+            )
         }
     }
 }

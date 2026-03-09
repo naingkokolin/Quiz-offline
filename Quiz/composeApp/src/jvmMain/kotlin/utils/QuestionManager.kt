@@ -47,4 +47,17 @@ object QuestionManager {
             e.printStackTrace()
         }
     }
+
+    fun getAllQuestions(): List<Question> {
+        val databaseFile = File("questions.json")
+        return try {
+            if (databaseFile.exists() && databaseFile.readText().isNotBlank()) {
+                Json.decodeFromString<List<Question>>(databaseFile.readText())
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }

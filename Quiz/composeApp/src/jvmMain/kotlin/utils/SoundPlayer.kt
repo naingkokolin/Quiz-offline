@@ -22,11 +22,9 @@ import javax.sound.sampled.AudioSystem
 object SoundPlayer {
     fun play(sound: String) {
         try {
-            // Resource ကို Stream အနေနဲ့ ဖတ်တာက Jar file ထုပ်ပြီးရင်တောင် ပိုအလုပ်လုပ်ပါတယ်
             val inputStream = javaClass.classLoader.getResourceAsStream(sound)
-                ?: throw Exception("မသိရသေးသော ဖိုင်အမည်: $sound (လမ်းကြောင်းကို ပြန်စစ်ပါ)")
+                ?: throw Exception("Unknown file: $sound (Check file path!)")
 
-            // BufferedInputStream သုံးတာက အသံထစ်တာကို ကာကွယ်ပေးတယ်
             val bufferedIn = BufferedInputStream(inputStream)
             val audioStream = AudioSystem.getAudioInputStream(bufferedIn)
 
@@ -34,7 +32,6 @@ object SoundPlayer {
             clip.open(audioStream)
             clip.start()
 
-            // အသံပြီးသွားရင် clip ကို ပြန်ပိတ်ချင်ရင် Listener ထည့်လို့ရပါတယ် (Optional)
         } catch (e: Exception) {
             println("Sound Player Error: ${e.message}")
         }

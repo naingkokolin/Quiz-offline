@@ -1,0 +1,20 @@
+[
+    {
+        "category": "General",
+        "question": "Who is NKKL?",
+        "option_a": "Student",
+        "option_b": "Teacher",
+        "option_c": "Boyfriend",
+        "option_d": "Friend",
+        "correct_answer": "A"
+    },
+    {
+        "category": "IT",
+        "question": "What is IT?",
+        "option_a": "it",
+        "option_b": "Information Technology",
+        "option_c": "Interm",
+        "option_d": "International",
+        "correct_answer": "B"
+    }
+]
