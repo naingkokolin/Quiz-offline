@@ -60,4 +60,31 @@ object QuestionManager {
             emptyList()
         }
     }
+
+    fun deleteQuestion(questionToDelete: Question) {
+        val all = getAllQuestions().toMutableList()
+        all.removeAll { it.question == questionToDelete.question }
+        saveAllQuestions(all)
+    }
+
+    fun importQuestionsFromFile(file: File) {
+        try {
+            val jsonContent = file.readText()
+            val newQuestions = Json.decodeFromString<List<Question>>(jsonContent)
+            val currentQuestions = getAllQuestions().toMutableList()
+
+            // ရှိပြီးသား မေးခွန်းတွေထဲကို ပေါင်းထည့်မယ်
+            currentQuestions.addAll(newQuestions)
+            saveAllQuestions(currentQuestions)
+        } catch (e: Exception) {
+            println("Import Error: ${e.message}")
+        }
+    }
+
+    // Helper function to save the whole list
+    private fun saveAllQuestions(questions: List<Question>) {
+        val file = File("questions.json")
+        val jsonString = Json.encodeToString(questions)
+        file.writeText(jsonString)
+    }
 }
