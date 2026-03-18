@@ -119,7 +119,6 @@ fun JudgePanel(onBack: () -> Unit) {
 
                     Spacer(Modifier.height(35.dp))
 
-                    // Premium Action Button
                     val btnColor = if (editingQuestion == null) Color(0xFF243B55) else Color(0xFFF49124)
                     Button(
                         onClick = {
@@ -204,7 +203,7 @@ fun JudgePanel(onBack: () -> Unit) {
     }
 }
 
-// --- Enhanced Helper Components ---
+// --- Helper Components ---
 @Composable
 
 fun OptionField(label: String, value: String, onValueChange: (String) -> Unit) {
