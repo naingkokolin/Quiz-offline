@@ -1,23 +1,28 @@
 package org.mst_college.project.quiz
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.unit.dp
 import org.mst_college.project.quiz.navigation.Screen
 import org.mst_college.project.quiz.screens.*
 
-enum class Screen {
-    Login, Register, Home, Quiz, JudgePanel
-}
-
 @Composable
 fun App() {
-    val navigationStack = remember { mutableStateListOf(Screen.WELCOME) }
+    val navigationStack = remember { mutableStateListOf(Screen.Login) }
     val currentScreen = navigationStack.last()
 
     val focusRequester = remember { FocusRequester() }
@@ -32,40 +37,110 @@ fun App() {
         navigationStack.add(nextScreen)
     }
 
+    val loginSuccess = {
+        navigationStack.clear()
+        navigationStack.add(Screen.Welcome)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .focusRequester(focusRequester)
-            .focusable() // Keyboard event လက်ခံနိုင်ရန်
+            .focusable()
             .onKeyEvent { event ->
-                if (event.key == Key.Escape && event.type == KeyEventType.KeyUp) {
+                if (event.key == Key.Escape && event.type == KeyEventType.KeyUp && navigationStack.size > 1) {
                     goBack()
-                    true // Event ကို ဒီမှာတင် ရပ်လိုက်ပြီဟု သတ်မှတ်
+                    true
                 } else {
                     false
                 }
             }
     ) {
-        when (currentScreen) {
-            Screen.WELCOME -> WelcomeScreen {
-                navigateTo(Screen.HOME)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .padding(end = 10.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+//            // Minimize Button
+//            WindowControlButton(Icons.Default.Remove, Color.Gray) {
+//                // Desktop context မှာဆိုရင် window state ကို minimize လုပ်တဲ့ logic ထည့်နိုင်ပါတယ်
+//            }
+//
+//            // Maximize/Restore Button
+//            WindowControlButton(Icons.Default.Square, Color.Gray) {
+//                // Window size toggle logic
+//            }
+
+            WindowControlButton(
+                icon = Icons.Default.Close,
+                hoverColor = Color.Red,
+                iconColor = Color.DarkGray
+            ) {
+                java.lang.System.exit(0)
             }
+        }
+        Column(modifier = Modifier.fillMaxSize().padding(top = 40.dp)) {
+            when (currentScreen) {
+                Screen.Login -> LoginScreen(
+                    onLoginSuccess = { loginSuccess() },
+                    onNavigateToRegister = { navigateTo(Screen.Register) }
+                )
 
-            Screen.HOME -> HomeScreen(
-                onQuiz = { navigateTo(Screen.QUIZ) },
-                onJudge = { navigateTo(Screen.JUDGE) },
-                onSettings = { navigateTo(Screen.SETTINGS) }
-            )
+                Screen.Register -> RegisterScreen(
+                    onRegisterSuccess = { goBack() },
+                    onNavigateToLogin = { goBack() }
+                )
 
-            // Screen တစ်ခုချင်းစီကို goBack function လှမ်းပေးလိုက်သည်
-            Screen.QUIZ -> QuizScreen(onBack = goBack)
-            Screen.JUDGE -> JudgePanel(onBack = goBack)
-            Screen.SETTINGS -> SettingsScreen(onBack = goBack)
+                Screen.Welcome -> WelcomeScreen {
+                    navigationStack.clear()
+                    navigationStack.add(Screen.Home)
+                }
+
+                Screen.Home -> HomeScreen(
+                    onQuiz = { navigateTo(Screen.Quiz) },
+                    onJudge = { navigateTo(Screen.JudgePanel) }, // Screen enum နဲ့ နာမည်တူအောင် ညှိထားပါတယ်
+                    onSettings = { navigateTo(Screen.Settings) }
+                )
+
+                Screen.Quiz -> QuizScreen(onBack = goBack)
+                Screen.JudgePanel -> JudgePanel(onBack = goBack)
+                Screen.Settings -> SettingsScreen(onBack = goBack)
+            }
         }
 
-        // App စဖွင့်သည်နှင့် Keyboard focus ရအောင် လုပ်ပေးရမည်
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun WindowControlButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    iconColor: Color = Color.Gray,
+    hoverColor: Color = Color.LightGray.copy(alpha = 0.3f),
+    onClick: () -> Unit
+) {
+    var isHovered by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .size(45.dp, 30.dp)
+            .background(if (isHovered) hoverColor else Color.Transparent)
+            .clickable { onClick() }
+            .onPointerEvent(androidx.compose.ui.input.pointer.PointerEventType.Enter) { isHovered = true }
+            .onPointerEvent(androidx.compose.ui.input.pointer.PointerEventType.Exit) { isHovered = false },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = if (isHovered && icon == Icons.Default.Close) Color.White else iconColor
+        )
     }
 }
