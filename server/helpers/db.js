@@ -36,6 +36,16 @@ const initDb = () => {
     `;
     db.exec(settingsQuery);
 
+    const userQuery = `
+        CREATE TABLE IF NOT EXISTS user(
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            password TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    `;
+    db.exec(userQuery);
+
     db.prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)").run("app_title", "Myanmar Quiz");
 };
 
