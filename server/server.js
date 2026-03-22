@@ -3,6 +3,7 @@ import cors from "cors";
 import initDb from "./helpers/db.js";
 import questionRoutes from "./routes/questionRoutes.js";
 import historyRoutes from "./routes/historyRoutes.js";
+import userRoutes from "./routes/userRoutes.js"
 import settings from "./routes/settings.js";
 
 const app = express();
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 
 app.use("/api/questions", questionRoutes)
 app.use("/api/history", historyRoutes);
-app.use('/api/settings', settings);
+app.use("/api/settings", settings);
+app.use("/api/users", userRoutes);
 
 app.listen(port, () => console.log("Server is running on port: 3000"));
