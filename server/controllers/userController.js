@@ -14,7 +14,7 @@ export const getAllUsers = async(req, res) => {
     }
 }
 
-export const createUser = async(req, res) => {
+export const register = async(req, res) => {
     try{
         const {
             username,
@@ -30,7 +30,7 @@ export const createUser = async(req, res) => {
         const stmt = db.prepare(sql);
         stmt.run(username, hashedPassword);
 
-        res.json({message: "New user added."});
+        res.json({message: "User registered successfully."});
     } catch(e) {
         res.status(500).json({message: `Error while creating new user: ${e.message}!`})
     }
