@@ -14,12 +14,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import utils.UserManager
 
 @Composable
 fun RegisterScreen(onRegisterSuccess: () -> Unit, onNavigateToLogin: () -> Unit) {
     var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
     val bgGradient = Brush.verticalGradient(listOf(Color(0xFF4527A0), Color(0xFF121212)))
 
@@ -35,19 +37,34 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit, onNavigateToLogin: () -> Unit)
 
                 AuthTextField(value = name, label = "Full Name", onValueChange = { name = it }, icon = Icons.Default.Person)
                 Spacer(Modifier.height(15.dp))
-                AuthTextField(value = email, label = "Email", onValueChange = { email = it }, icon = Icons.Default.Email)
+                AuthTextField(value = username, label = "Username", onValueChange = { username= it }, icon = Icons.Default.Email)
                 Spacer(Modifier.height(15.dp))
                 AuthTextField(value = password, label = "Password", onValueChange = { password = it }, icon = Icons.Default.Lock, isPassword = true)
 
                 Spacer(Modifier.height(30.dp))
 
                 Button(
-                    onClick = onRegisterSuccess,
+                    onClick = {
+                        if (username.isBlank() || password.isBlank()) {
+                            errorMessage = "Fields cannot be empty!"
+                        } else {
+                            val isRegistered = UserManager.register(username, password)
+                            if (isRegistered) {
+                                onRegisterSuccess()
+                            } else {
+                                errorMessage = "Username already exists!"
+                            }
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF7E57C2))
                 ) {
                     Text("REGISTER", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+
+                if (errorMessage.isNotEmpty()) {
+                    Text(errorMessage, color = Color.Red, modifier = Modifier.padding(top = 10.dp))
                 }
 
                 TextButton(onClick = onNavigateToLogin) {
