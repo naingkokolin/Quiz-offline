@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import model.Question
@@ -41,7 +42,7 @@ fun QuizScreen(onBack: () -> Unit) {
         }
     }
 
-    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFF0D47A1), Color(0xFF000000)))
+    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFF2E1A6B), Color(0xFF100A2C)))
 
     Box(modifier = Modifier.fillMaxSize().background(primaryGradient)) {
         IconButton(onClick = onBack, modifier = Modifier.padding(20.dp).align(Alignment.TopStart)) {
@@ -62,7 +63,7 @@ fun QuizScreen(onBack: () -> Unit) {
                 // Question Counter
                 Text(
                     "QUESTION ${currentQuestionIndex + 1} OF ${allQuestions.size}",
-                    fontSize = 20.sp,
+                    fontSize = 24.sp,
                     color = Color.Cyan.copy(alpha = 0.8f),
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = 2.sp
@@ -70,47 +71,94 @@ fun QuizScreen(onBack: () -> Unit) {
 
                 Spacer(Modifier.height(30.dp))
 
+                // --- မေးခွန်းစာသား (အချိန်ပြည့်တာနဲ့ ဖျောက်မယ်) ---
                 AnimatedVisibility(
                     visible = !isTimeUp,
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically()
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = currentQ.question,
+                        fontSize = 46.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        lineHeight = 45.sp,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(Modifier.height(40.dp))
+
+                // Answer / Options Area
+                Box(modifier = Modifier.height(400.dp).widthIn(max = 850.dp), contentAlignment = Alignment.Center) {
+                    this@Column.AnimatedVisibility(
+                        visible = !isTimeUp && !showAnswer,
+                        enter = fadeIn(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        Column {
+                            QuizOption("A", currentQ.option_a)
+                            QuizOption("B", currentQ.option_b)
+                            QuizOption("C", currentQ.option_c)
+                            QuizOption("D", currentQ.option_d)
+                        }
+                    }
+
+                    this@Column.AnimatedVisibility(
+                        visible = showAnswer,
+                        enter = scaleIn() + fadeIn(),
+                        exit = scaleOut() + fadeOut()
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Box(
+                                modifier = Modifier
+                                    .size(240.dp)
+                                    .background(Color(0xFF4CAF50).copy(alpha = 0.9f), shape = CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = currentQ.correct_answer ?: "?",
+                                    fontSize = 140.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White
+                                )
+                            }
+                            Spacer(Modifier.height(20.dp))
+                            Text(
+                                "CORRECT ANSWER",
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFF4CAF50)
+                            )
+                        }
+                    }
+
+                    if (isTimeUp && !showAnswer) {
                         Text(
-                            text = currentQ.question,
-                            fontSize = 42.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            lineHeight = 45.sp,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            "TIME IS UP!",
+                            fontSize = 60.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.Red
                         )
-                        Spacer(Modifier.height(40.dp))
                     }
                 }
 
-                Column(modifier = Modifier.widthIn(max = 850.dp)) {
-                    QuizOption("A", currentQ.option_a, showAnswer, currentQ.correct_answer == "A")
-                    QuizOption("B", currentQ.option_b, showAnswer, currentQ.correct_answer == "B")
-                    QuizOption("C", currentQ.option_c, showAnswer, currentQ.correct_answer == "C")
-                    QuizOption("D", currentQ.option_d, showAnswer, currentQ.correct_answer == "D")
-                }
+                Spacer(Modifier.height(30.dp))
 
-                Spacer(Modifier.height(50.dp))
-
-                // Timer or Control Buttons
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.height(200.dp)) {
-                    if (!showAnswer) {
+                // Control Area
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.height(180.dp)) {
+                    if (!isTimeUp && !showAnswer) {
                         CircularTimer(
                             totalTime = settings.SettingsManager.load().timerSeconds,
                             key = currentQuestionIndex,
                             onFinish = {
                                 isTimeUp = true
+                                SoundPlayer.play("timeup.wav")
                             },
                             playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
                         )
                     }
 
-                    // Show Answer / Next Buttons
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         if (isTimeUp && !showAnswer) {
                             Button(
@@ -164,43 +212,23 @@ fun QuizScreen(onBack: () -> Unit) {
 }
 
 @Composable
-fun QuizOption(letter: String, text: String, showAnswer: Boolean, isCorrect: Boolean) {
-    val backgroundColor = when {
-        showAnswer && isCorrect -> Color(0xFF1B5E20) // Dark Green
-        showAnswer && !isCorrect -> Color.White.copy(alpha = 0.05f) // Dimmed
-        else -> Color.White.copy(alpha = 0.12f) // Default
-    }
-
-    val textColor = if (showAnswer && !isCorrect) Color.Gray else Color.White
-    val borderColor = if (showAnswer && isCorrect) Color.Green else Color.Transparent
-
+fun QuizOption(letter: String, text: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp)
+            .padding(vertical = 8.dp)
             .heightIn(min = 70.dp),
         shape = RoundedCornerShape(16.dp),
-        backgroundColor = backgroundColor,
-        elevation = if (showAnswer && isCorrect) 12.dp else 0.dp,
-        border = if (showAnswer && isCorrect) androidx.compose.foundation.BorderStroke(3.dp, Color.Green) else null
+        backgroundColor = Color.White.copy(alpha = 0.1f),
+        elevation = 0.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "$letter:",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Black,
-                color = if (showAnswer && isCorrect) Color.Green else Color.Cyan
-            )
+            Text(text = "$letter:", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.Cyan)
             Spacer(Modifier.width(20.dp))
-            Text(
-                text = text,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = if (showAnswer && !isCorrect) Color.Gray else Color.White
-            )
+            Text(text = text, fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
         }
     }
 }
@@ -209,32 +237,13 @@ fun QuizOption(letter: String, text: String, showAnswer: Boolean, isCorrect: Boo
 fun StartButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = Modifier
-            .size(220.dp)
-            .clip(CircleShape),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(0xFF4CAF50),
-            contentColor = Color.White
-        ),
+        modifier = Modifier.size(220.dp).clip(CircleShape),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4CAF50), contentColor = Color.White),
         elevation = ButtonDefaults.elevation(12.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = "Start",
-                modifier = Modifier.size(80.dp)
-            )
-            Text(
-                "START QUIZ",
-                style = androidx.compose.ui.text.TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    letterSpacing = 2.sp
-                )
-            )
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Start", modifier = Modifier.size(80.dp))
+            Text("START QUIZ", fontWeight = FontWeight.Bold, fontSize = 20.sp, letterSpacing = 2.sp)
         }
     }
 }
