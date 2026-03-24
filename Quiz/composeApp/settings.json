@@ -1,4 +1,5 @@
 {
-    "timerSeconds": 15,
-    "isDarkMode": false
+    "title": "Quiz Tourrrrrr",
+    "questionLimit": 11,
+    "timerSeconds": 12
 }
