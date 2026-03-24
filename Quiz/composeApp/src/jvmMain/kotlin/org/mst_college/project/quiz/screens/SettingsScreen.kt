@@ -5,19 +5,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.FormatListNumbered
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Title
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import settings.Settings
 import settings.SettingsManager
 
@@ -28,7 +23,10 @@ fun SettingsScreen(onBack: () -> Unit) {
     var logoPath by remember { mutableStateOf("") }
     var questionLimit by remember { mutableStateOf("10") }
     var timerSeconds by remember { mutableStateOf("30") }
-    var isDarkMode by remember { mutableStateOf(true) }
+
+    // Snackbar ပြဖို့အတွက် state
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope() // Snackbar က suspend function ဖြစ်လို့ scope လိုတယ်
 
     // Load existing settings
     LaunchedEffect(Unit) {
@@ -37,10 +35,10 @@ fun SettingsScreen(onBack: () -> Unit) {
         logoPath = s.logoPath
         questionLimit = s.questionLimit.toString()
         timerSeconds = s.timerSeconds.toString()
-        isDarkMode = s.isDarkMode
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }, // Snackbar ပြမယ့်နေရာ သတ်မှတ်ခြင်း
         topBar = {
             TopAppBar(
                 title = { Text("Settings", fontWeight = FontWeight.Bold) },
@@ -81,19 +79,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                 leadingIcon = { Icon(Icons.Default.Image, null) }
             )
 
-            // Dark Mode Toggle
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.DarkMode, null)
-                    Spacer(Modifier.width(10.dp))
-                    Text("Dark Mode Theme", fontSize = 16.sp)
-                }
-                Switch(checked = isDarkMode, onCheckedChange = { isDarkMode = it })
-            }
+            // Dark Mode Toggle ကို ဖြုတ်လိုက်ပါပြီ
 
             HorizontalDivider()
 
@@ -123,15 +109,24 @@ fun SettingsScreen(onBack: () -> Unit) {
             // --- Save Button ---
             Button(
                 onClick = {
+                    // ၁။ Settings သိမ်းမယ်
                     SettingsManager.save(
                         Settings(
                             title = title,
                             logoPath = logoPath,
                             questionLimit = questionLimit.toIntOrNull() ?: 10,
                             timerSeconds = timerSeconds.toIntOrNull() ?: 30,
-                            isDarkMode = isDarkMode
+                            isDarkMode = true // Default အနေနဲ့ true ပဲ ထားလိုက်မယ်
                         )
                     )
+
+                    // ၂။ Snackbar ပြမယ်
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Settings saved successfully!",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
                 },
                 modifier = Modifier.fillMaxWidth().height(55.dp),
                 shape = ShapeDefaults.Medium
