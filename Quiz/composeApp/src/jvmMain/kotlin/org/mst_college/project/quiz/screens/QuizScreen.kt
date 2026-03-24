@@ -1,6 +1,7 @@
 package org.mst_college.project.quiz.screens
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,6 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable.key
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import model.Question
 import org.mst_college.project.quiz.ui.components.CircularTimer
 import utils.QuestionManager
@@ -53,146 +59,147 @@ fun QuizScreen(onBack: () -> Unit) {
             Text("No questions found!", color = Color.White, modifier = Modifier.align(Alignment.Center))
         } else if (isStarted && currentQuestionIndex < allQuestions.size) {
 
-            val currentQ = allQuestions[currentQuestionIndex]
+            key(currentQuestionIndex) {
+                val currentQ = allQuestions[currentQuestionIndex]
 
-            Column(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 60.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                // Question Counter
-                Text(
-                    "QUESTION ${currentQuestionIndex + 1} OF ${allQuestions.size}",
-                    fontSize = 24.sp,
-                    color = Color.Cyan.copy(alpha = 0.8f),
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 2.sp
-                )
-
-                Spacer(Modifier.height(30.dp))
-
-                // --- မေးခွန်းစာသား (အချိန်ပြည့်တာနဲ့ ဖျောက်မယ်) ---
-                AnimatedVisibility(
-                    visible = !isTimeUp,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 60.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
+                    // Question Counter
                     Text(
-                        text = currentQ.question,
-                        fontSize = 46.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        lineHeight = 45.sp,
-                        textAlign = TextAlign.Center
+                        "QUESTION ${currentQuestionIndex + 1} OF ${allQuestions.size}",
+                        fontSize = 24.sp,
+                        color = Color.Cyan.copy(alpha = 0.8f),
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 2.sp
                     )
-                }
 
-                Spacer(Modifier.height(40.dp))
+                    Spacer(Modifier.height(30.dp))
 
-                // Answer / Options Area
-                Box(modifier = Modifier.height(400.dp).widthIn(max = 850.dp), contentAlignment = Alignment.Center) {
-                    this@Column.AnimatedVisibility(
-                        visible = !isTimeUp && !showAnswer,
-                        enter = fadeIn(),
+                    AnimatedVisibility(
+                        visible = !isTimeUp,
+                        enter = fadeIn() + expandVertically(),
                         exit = fadeOut() + shrinkVertically()
                     ) {
-                        Column {
-                            QuizOption("A", currentQ.option_a)
-                            QuizOption("B", currentQ.option_b)
-                            QuizOption("C", currentQ.option_c)
-                            QuizOption("D", currentQ.option_d)
-                        }
+                        Text(
+                            text = currentQ.question,
+                            fontSize = 46.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            lineHeight = 45.sp,
+                            textAlign = TextAlign.Center
+                        )
                     }
 
-                    this@Column.AnimatedVisibility(
-                        visible = showAnswer,
-                        enter = scaleIn() + fadeIn(),
-                        exit = scaleOut() + fadeOut()
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Box(
-                                modifier = Modifier
-                                    .size(240.dp)
-                                    .background(Color(0xFF4CAF50).copy(alpha = 0.9f), shape = CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
+                    Spacer(Modifier.height(40.dp))
+
+                    // Answer / Options Area
+                    Box(modifier = Modifier.height(400.dp).widthIn(max = 850.dp), contentAlignment = Alignment.Center) {
+                        this@Column.AnimatedVisibility(
+                            visible = !isTimeUp && !showAnswer,
+                            enter = fadeIn(),
+                            exit = fadeOut() + shrinkVertically()
+                        ) {
+                            Column {
+                                QuizOption("A", currentQ.option_a)
+                                QuizOption("B", currentQ.option_b)
+                                QuizOption("C", currentQ.option_c)
+                                QuizOption("D", currentQ.option_d)
+                            }
+                        }
+
+                        this@Column.AnimatedVisibility(
+                            visible = showAnswer,
+                            enter = scaleIn() + fadeIn(),
+                            exit = scaleOut(animationSpec = tween(100)) + fadeOut()
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(240.dp)
+                                        .background(Color(0xFF4CAF50).copy(alpha = 0.9f), shape = CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = currentQ.correct_answer ?: "?",
+                                        fontSize = 140.sp,
+                                        fontWeight = FontWeight.Black,
+                                        color = Color.White
+                                    )
+                                }
+                                Spacer(Modifier.height(20.dp))
                                 Text(
-                                    text = currentQ.correct_answer ?: "?",
-                                    fontSize = 140.sp,
-                                    fontWeight = FontWeight.Black,
-                                    color = Color.White
+                                    "CORRECT ANSWER",
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color(0xFF4CAF50)
                                 )
                             }
-                            Spacer(Modifier.height(20.dp))
+                        }
+
+                        if (isTimeUp && !showAnswer) {
                             Text(
-                                "CORRECT ANSWER",
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color(0xFF4CAF50)
+                                "TIME IS UP!",
+                                fontSize = 60.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color.Red
                             )
                         }
                     }
 
-                    if (isTimeUp && !showAnswer) {
-                        Text(
-                            "TIME IS UP!",
-                            fontSize = 60.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color.Red
-                        )
-                    }
-                }
+                    Spacer(Modifier.height(30.dp))
 
-                Spacer(Modifier.height(30.dp))
-
-                // Control Area
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.height(180.dp)) {
-                    if (!isTimeUp && !showAnswer) {
-                        CircularTimer(
-                            totalTime = settings.SettingsManager.load().timerSeconds,
-                            key = currentQuestionIndex,
-                            onFinish = {
-                                isTimeUp = true
-                                SoundPlayer.play("timeup.wav")
-                            },
-                            playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
-                        )
-                    }
-
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (isTimeUp && !showAnswer) {
-                            Button(
-                                onClick = { showAnswer = true },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF9800)),
-                                modifier = Modifier.height(65.dp).width(280.dp),
-                                shape = RoundedCornerShape(32.dp),
-                                elevation = ButtonDefaults.elevation(10.dp)
-                            ) {
-                                Text("SHOW ANSWER", fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
-                            }
+                    // Control Area
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.height(180.dp)) {
+                        if (!isTimeUp && !showAnswer) {
+                            CircularTimer(
+                                totalTime = settings.SettingsManager.load().timerSeconds,
+                                key = currentQuestionIndex,
+                                onFinish = {
+                                    isTimeUp = true
+                                    SoundPlayer.play("timeup.wav")
+                                },
+                                playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
+                            )
                         }
 
-                        if (showAnswer) {
-                            Button(
-                                onClick = {
-                                    if (currentQuestionIndex < allQuestions.size - 1) {
-                                        showAnswer = false
-                                        isTimeUp = false
-                                        currentQuestionIndex++
-                                        SoundPlayer.play("start.wav")
-                                    } else {
-                                        onBack()
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF2196F3)),
-                                modifier = Modifier.height(65.dp).width(280.dp),
-                                shape = RoundedCornerShape(32.dp)
-                            ) {
-                                Text(
-                                    if (currentQuestionIndex < allQuestions.size - 1) "NEXT QUESTION" else "FINISH QUIZ",
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.ExtraBold
-                                )
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            if (isTimeUp && !showAnswer) {
+                                Button(
+                                    onClick = { showAnswer = true },
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF9800)),
+                                    modifier = Modifier.height(65.dp).width(280.dp),
+                                    shape = RoundedCornerShape(32.dp),
+                                    elevation = ButtonDefaults.elevation(10.dp)
+                                ) {
+                                    Text("SHOW ANSWER", fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
+                                }
+                            }
+
+                            if (showAnswer) {
+                                Button(
+                                    onClick = {
+                                        if (currentQuestionIndex < allQuestions.size - 1) {
+                                            showAnswer = false
+                                            isTimeUp = false
+                                            currentQuestionIndex++
+                                            SoundPlayer.play("start.wav")
+                                        } else {
+                                            onBack()
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF2196F3)),
+                                    modifier = Modifier.height(65.dp).width(280.dp),
+                                    shape = RoundedCornerShape(32.dp)
+                                ) {
+                                    Text(
+                                        if (currentQuestionIndex < allQuestions.size - 1) "NEXT QUESTION" else "FINISH QUIZ",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
                             }
                         }
                     }
