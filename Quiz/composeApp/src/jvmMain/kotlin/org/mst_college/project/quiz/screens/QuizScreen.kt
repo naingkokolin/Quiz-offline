@@ -168,7 +168,10 @@ fun QuizScreen(onBack: () -> Unit) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             if (isTimeUp && !showAnswer) {
                                 Button(
-                                    onClick = { showAnswer = true },
+                                    onClick = {
+                                        showAnswer = true
+                                        val currentQ = allQuestions[currentQuestionIndex]
+                                        QuestionManager.markAsUsed(listOf(currentQ)) },
                                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF9800)),
                                     modifier = Modifier.height(65.dp).width(280.dp),
                                     shape = RoundedCornerShape(32.dp),

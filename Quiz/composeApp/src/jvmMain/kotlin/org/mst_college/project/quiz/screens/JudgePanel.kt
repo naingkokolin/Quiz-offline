@@ -38,6 +38,8 @@ fun JudgePanel(onBack: () -> Unit) {
     var editingQuestion by remember { mutableStateOf<Question?>(null) }
     val allQuestions = remember { mutableStateListOf<Question>() }
 
+    var showOnlyUsed by remember { mutableStateOf(false) }
+
     fun refreshQuestions() {
         allQuestions.clear()
         allQuestions.addAll(QuestionManager.getAllQuestions())
@@ -165,10 +167,37 @@ fun JudgePanel(onBack: () -> Unit) {
                 Column {
                     Text("Questions", fontSize = 32.sp, fontWeight = FontWeight.Black, color = Color(0xFF102A43))
                     Text("${allQuestions.size} questions in Database", color = Color(0xFF627D98))
+                    // test***************************************************************************************
+                    Spacer(Modifier.height(15.dp))
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        TextButton(
+                            onClick = { showOnlyUsed = false },
+                            colors = ButtonDefaults.textButtonColors(contentColor = if (!showOnlyUsed) Color(0xFF243B55) else Color.Gray)
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("Available QUESTIONS", fontWeight = if (!showOnlyUsed) FontWeight.Bold else FontWeight.Normal)
+                                if (!showOnlyUsed) Box(Modifier.height(2.dp).width(40.dp).background(Color(0xFF243B55)))
+                            }
+                        }
+
+                        Spacer(Modifier.width(20.dp))
+
+                        TextButton(
+                            onClick = { showOnlyUsed = true },
+                            colors = ButtonDefaults.textButtonColors(contentColor = if (showOnlyUsed) Color(0xFF243B55) else Color.Gray)
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("USED QUESTIONS", fontWeight = if (showOnlyUsed) FontWeight.Bold else FontWeight.Normal)
+                                if (showOnlyUsed) Box(Modifier.height(2.dp).width(40.dp).background(Color(0xFF243B55)))
+                            }
+                        }
+                    }
+                    // ***************
                 }
 
                 Button(
-                    onClick = { pickJsonFile()?.let { QuestionManager.importQuestionsFromFile(it); refreshQuestions() } },
+                    onClick = { pickJsonFile()?.let { QuestionManager.importQuestions(); refreshQuestions() } },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                     shape = RoundedCornerShape(12.dp),
                     border = BorderStroke(1.dp, Color.LightGray),
@@ -182,7 +211,12 @@ fun JudgePanel(onBack: () -> Unit) {
             Spacer(Modifier.height(25.dp))
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(allQuestions) { q ->
+                val displayList = if (showOnlyUsed) {
+                    allQuestions.filter { it.isUsed }
+                } else {
+                    allQuestions.filter { !it.isUsed }
+                }
+                items(displayList) { q ->
                     AdminQuestionItem(
                         q = q,
                         onEdit = {
@@ -195,7 +229,11 @@ fun JudgePanel(onBack: () -> Unit) {
                             optionD = q.option_d
                             correctAns = q.correct_answer
                         },
-                        onDelete = { QuestionManager.deleteQuestion(q); refreshQuestions() }
+                        onDelete = { QuestionManager.deleteQuestion(q); refreshQuestions() },
+                        onRestore = {
+                            QuestionManager.removeFromUsed(q)
+                            refreshQuestions()
+                        }
                     )
                 }
             }
@@ -271,11 +309,11 @@ fun CorrectAnswerDropdown(selected: String, onSelect: (String) -> Unit) {
 }
 
 @Composable
-fun AdminQuestionItem(q: Question, onEdit: () -> Unit, onDelete: () -> Unit) {
+fun AdminQuestionItem(q: Question, onEdit: () -> Unit, onDelete: () -> Unit, onRestore: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).shadow(2.dp, RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
-        backgroundColor = Color.White
+        backgroundColor = if (q.isUsed) Color(0xFFF8F9FA) else Color.White
     ) {
         Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -288,6 +326,12 @@ fun AdminQuestionItem(q: Question, onEdit: () -> Unit, onDelete: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(q.category.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF627D98), letterSpacing = 1.sp)
                 Text(q.question, fontWeight = FontWeight.Bold, maxLines = 1, fontSize = 16.sp, color = Color(0xFF102A43))
+            }
+            if (q.isUsed) {
+                // Used ဖြစ်နေမှ ပေါ်မယ့် Restore Button (Used ထဲကထုတ်မယ်)
+                IconButton(onClick = onRestore) {
+                    Icon(Icons.Default.SettingsBackupRestore, "Restore", tint = Color(0xFF4CAF50))
+                }
             }
             IconButton(onClick = onEdit) { Icon(Icons.Default.Edit, "Edit", tint = Color(0xFF2196F3)) }
             IconButton(onClick = onDelete) { Icon(Icons.Default.Delete, "Delete", tint = Color(0xFFEF5350)) }
