@@ -133,7 +133,6 @@ object QuestionManager {
 
     private val databaseFile = File("questions.json")
 
-    // --- ၁။ ဖြေပြီးသွားတဲ့ မေးခွန်းတွေကို 'Used' အဖြစ် သတ်မှတ်ရန် ---
     fun markAsUsed(answeredQuestions: List<Question>) {
         val all = getAllQuestions().toMutableList()
         answeredQuestions.forEach { answered ->
@@ -157,7 +156,6 @@ object QuestionManager {
     fun getAllQuestions(): List<Question> {
         return try {
             if (databaseFile.exists() && databaseFile.readText().isNotBlank()) {
-                // JSON worker ကို သုံးမှ isUsed field တွေကို မှန်မှန်ကန်ကန် decode လုပ်နိုင်မှာပါ
                 jsonWorker.decodeFromString<List<Question>>(databaseFile.readText())
             } else {
                 emptyList()
@@ -190,8 +188,6 @@ object QuestionManager {
             e.printStackTrace()
         }
     }
-
-    // ... importQuestions နဲ့ saveRoundHistory တို့ကတော့ မင်းရှိပြီးသားအတိုင်း ထားလို့ရပါတယ် ...
 
     fun importQuestions() {
         val importFile = File("questions_import.json")
@@ -227,7 +223,7 @@ object QuestionManager {
                 emptyList()
             }
 
-            // အသစ်ပေါင်းထည့်ပြီး ပြန်သိမ်းမယ်
+
             val updatedHistory = existingHistory + roundData
             historyFile.writeText(jsonWorker.encodeToString(updatedHistory))
         } catch (e: Exception) {
@@ -240,7 +236,7 @@ object QuestionManager {
             if (!file.exists()) return
 
             val jsonContent = file.readText()
-            // မင်းရဲ့ jsonWorker ကို သုံးပြီး decode လုပ်မယ်
+
             val newQuestions = jsonWorker.decodeFromString<List<Question>>(jsonContent)
 
             val currentQuestions = getAllQuestions().toMutableList()

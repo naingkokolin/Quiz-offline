@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -16,15 +17,87 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import settings.SettingsManager
 import kotlin.system.exitProcess
 
 @Composable
+//fun HomeScreen(
+//    onQuiz: () -> Unit,
+//    onJudge: () -> Unit,
+//    onSettings: () -> Unit
+//) {
+//    // Background Gradient (Deep Blue to Dark)
+//    val backgroundGradient = Brush.horizontalGradient(
+//        colors = listOf(Color(0xFF0D47A1), Color(0xFF001233))
+//    )
+//
+//    Row(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(backgroundGradient)
+//            .padding(50.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        // --- Left Side: Logo & Title ---
+//        Column(
+//            modifier = Modifier.weight(1f),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.Center
+//        ) {
+//            // Logo Placeholder (မင်းဆီမှာ Logo ပုံရှိရင် Icon နေရာမှာ Image သုံးနိုင်ပါတယ်)
+//            Icon(
+//                imageVector = Icons.Default.EmojiEvents, // ဆုဖလားပုံ
+//                contentDescription = "Logo",
+//                modifier = Modifier.size(150.dp),
+//                tint = Color(0xFFFFD700) // Gold Color
+//            )
+//
+//            Spacer(modifier = Modifier.height(20.dp))
+//
+//            Text(
+//                text = "QUIZ MASTER",
+//                color = Color.White,
+//                fontSize = 48.sp,
+//                fontWeight = FontWeight.ExtraBold,
+//                letterSpacing = 2.sp
+//            )
+//
+//            Text(
+//                text = "Tournament Edition v1.0",
+//                color = Color.White.copy(alpha = 0.7f),
+//                fontSize = 18.sp
+//            )
+//        }
+//
+//        // --- Right Side: Menu Buttons ---
+//        Column(
+//            modifier = Modifier.weight(1f),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.spacedBy(20.dp)
+//        ) {
+//            MenuButton("Start Quiz", Icons.Default.PlayArrow, Color(0xFF4CAF50), onQuiz)
+//            MenuButton("Judge Panel", Icons.Default.Groups, Color(0xFF2196F3), onJudge)
+//            MenuButton("Settings", Icons.Default.Settings, Color(0xFF607D8B), onSettings)
+//
+//            Divider(color = Color.White.copy(alpha = 0.2f), thickness = 1.dp, modifier = Modifier.width(280.dp).padding(vertical = 10.dp))
+//
+//            // Quit Button
+//            MenuButton("Quit App", Icons.AutoMirrored.Filled.ExitToApp, Color(0xFFD32F2F), {
+//                exitProcess(0)
+//            })
+//        }
+//    }
+//}
+
 fun HomeScreen(
     onQuiz: () -> Unit,
     onJudge: () -> Unit,
     onSettings: () -> Unit
 ) {
-    // Background Gradient (Deep Blue to Dark)
+    // --- Settings ကို Load လုပ်မယ် ---
+    // remember ကိုသုံးထားမှ Screen refresh ဖြစ်တိုင်း file ပြန်ပြန်မဖတ်မှာပါ
+    val settings = remember { SettingsManager.load() }
+
     val backgroundGradient = Brush.horizontalGradient(
         colors = listOf(Color(0xFF0D47A1), Color(0xFF001233))
     )
@@ -42,18 +115,20 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo Placeholder (မင်းဆီမှာ Logo ပုံရှိရင် Icon နေရာမှာ Image သုံးနိုင်ပါတယ်)
+            // TODO: logoPath ကို သုံးပြီး ပုံပြချင်ရင် ဒီနေရာမှာ Image သုံးနိုင်ပါတယ်
+            // အခုလောလောဆယ် Icon ပဲ ထားပါဦးမယ်
             Icon(
-                imageVector = Icons.Default.EmojiEvents, // ဆုဖလားပုံ
+                imageVector = Icons.Default.EmojiEvents,
                 contentDescription = "Logo",
                 modifier = Modifier.size(150.dp),
-                tint = Color(0xFFFFD700) // Gold Color
+                tint = Color(0xFFFFD700)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // --- ဒီနေရာမှာ Settings ထဲက title ကို သုံးလိုက်ပြီ ---
             Text(
-                text = "QUIZ MASTER",
+                text = settings.title.uppercase(), // Settings ထဲက စာသားကို ယူသုံးတာ
                 color = Color.White,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -79,7 +154,6 @@ fun HomeScreen(
 
             Divider(color = Color.White.copy(alpha = 0.2f), thickness = 1.dp, modifier = Modifier.width(280.dp).padding(vertical = 10.dp))
 
-            // Quit Button
             MenuButton("Quit App", Icons.AutoMirrored.Filled.ExitToApp, Color(0xFFD32F2F), {
                 exitProcess(0)
             })
