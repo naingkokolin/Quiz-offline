@@ -4,6 +4,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -159,45 +160,21 @@ fun JudgePanel(onBack: () -> Unit) {
 
         // --- RIGHT SIDE: QUESTION Management ---
         Column(modifier = Modifier.weight(0.58f).padding(top = 25.dp, end = 25.dp, bottom = 25.dp)) {
+
+            // Header Row: Title နဲ့ Import Button ကို တစ်တန်းတည်းထားမယ်
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text("Questions", fontSize = 32.sp, fontWeight = FontWeight.Black, color = Color(0xFF102A43))
                     Text("${allQuestions.size} questions in Database", color = Color(0xFF627D98))
-                    // test***************************************************************************************
-                    Spacer(Modifier.height(15.dp))
-
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        TextButton(
-                            onClick = { showOnlyUsed = false },
-                            colors = ButtonDefaults.textButtonColors(contentColor = if (!showOnlyUsed) Color(0xFF243B55) else Color.Gray)
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("Available QUESTIONS", fontWeight = if (!showOnlyUsed) FontWeight.Bold else FontWeight.Normal)
-                                if (!showOnlyUsed) Box(Modifier.height(2.dp).width(40.dp).background(Color(0xFF243B55)))
-                            }
-                        }
-
-                        Spacer(Modifier.width(20.dp))
-
-                        TextButton(
-                            onClick = { showOnlyUsed = true },
-                            colors = ButtonDefaults.textButtonColors(contentColor = if (showOnlyUsed) Color(0xFF243B55) else Color.Gray)
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("USED QUESTIONS", fontWeight = if (showOnlyUsed) FontWeight.Bold else FontWeight.Normal)
-                                if (showOnlyUsed) Box(Modifier.height(2.dp).width(40.dp).background(Color(0xFF243B55)))
-                            }
-                        }
-                    }
-                    // ***************
                 }
 
+                // Import Button ကို ညာဘက်မှာ ထားမယ်
                 Button(
-                    onClick = { pickJsonFile()?.let { QuestionManager.importQuestions(); refreshQuestions() } },
+                    onClick = { pickJsonFile()?.let { QuestionManager.importQuestionsFromFile(it); refreshQuestions() } },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                     shape = RoundedCornerShape(12.dp),
                     border = BorderStroke(1.dp, Color.LightGray),
@@ -208,16 +185,55 @@ fun JudgePanel(onBack: () -> Unit) {
                 }
             }
 
-            Spacer(Modifier.height(25.dp))
+            Spacer(Modifier.height(20.dp))
 
+            // Tab Selector: Available နဲ့ Used ခွဲဖို့ (Title ရဲ့ အောက်မှာ သီးသန့် Row တစ်ခုအနေနဲ့ ထားမယ်)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+
+                val availableCount = allQuestions.count { !it.isUsed }
+                val usedCount = allQuestions.count { it.isUsed }
+
+                // Available Tab
+                TextButton(
+                    onClick = { showOnlyUsed = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = if (!showOnlyUsed) Color(0xFF243B55) else Color.Gray)
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("AVAILABLE ($availableCount)", fontWeight = if (!showOnlyUsed) FontWeight.Bold else FontWeight.Normal)
+                        if (!showOnlyUsed) Box(Modifier.height(3.dp).width(60.dp).background(Color(0xFF243B55), RoundedCornerShape(2.dp)))
+                    }
+                }
+
+                Spacer(Modifier.width(24.dp))
+
+                // Used Tab
+                TextButton(
+                    onClick = { showOnlyUsed = true },
+                    colors = ButtonDefaults.textButtonColors(contentColor = if (showOnlyUsed) Color(0xFF243B55) else Color.Gray)
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("USED QUESTIONS ($usedCount)", fontWeight = if (showOnlyUsed) FontWeight.Bold else FontWeight.Normal)
+                        if (showOnlyUsed) Box(Modifier.height(3.dp).width(60.dp).background(Color(0xFF243B55), RoundedCornerShape(2.dp)))
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(15.dp))
+
+            // Questions List
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 val displayList = if (showOnlyUsed) {
                     allQuestions.filter { it.isUsed }
                 } else {
                     allQuestions.filter { !it.isUsed }
                 }
-                items(displayList) { q ->
+
+                itemsIndexed(displayList) { index, q ->
                     AdminQuestionItem(
+                        index = index + 1,
                         q = q,
                         onEdit = {
                             editingQuestion = q
@@ -309,17 +325,21 @@ fun CorrectAnswerDropdown(selected: String, onSelect: (String) -> Unit) {
 }
 
 @Composable
-fun AdminQuestionItem(q: Question, onEdit: () -> Unit, onDelete: () -> Unit, onRestore: () -> Unit) {
+fun AdminQuestionItem(index: Int, q: Question, onEdit: () -> Unit, onDelete: () -> Unit, onRestore: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).shadow(2.dp, RoundedCornerShape(16.dp)),
         shape = RoundedCornerShape(16.dp),
         backgroundColor = if (q.isUsed) Color(0xFFF8F9FA) else Color.White
     ) {
         Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier.size(50.dp).background(Color(0xFF243B55).copy(alpha = 0.05f), RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center
+            Column(
+                modifier = Modifier
+                    .size(55.dp) // size ကို နည်းနည်းလေး ပိုကြီးပေးရင် ပိုကြည့်ကောင်းတယ်
+                    .background(Color(0xFF243B55).copy(alpha = 0.05f), RoundedCornerShape(12.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
+                Text("#$index", fontSize = 12.sp, color = Color.Gray)
                 Text(q.correct_answer, fontWeight = FontWeight.Black, color = Color(0xFF243B55), fontSize = 18.sp)
             }
             Spacer(Modifier.width(20.dp))

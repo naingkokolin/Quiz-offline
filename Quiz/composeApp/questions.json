@@ -11,30 +11,13 @@
     },
     {
         "category": "IT",
-        "question": "What does CPU stand for?",
-        "option_a": "Central Processing Unit",
-        "option_b": "Computer Personal Unit",
-        "option_c": "Central Peripheral Universal",
-        "option_d": "Core Process Unit",
-        "correct_answer": "A"
-    },
-    {
-        "category": "IT",
         "question": "Which of these is an Operating System?",
         "option_a": "Google",
         "option_b": "Windows",
         "option_c": "Facebook",
         "option_d": "Intel",
-        "correct_answer": "B"
-    },
-    {
-        "category": "IT",
-        "question": "What does CPU stand for?",
-        "option_a": "Central Processing Unit",
-        "option_b": "Computer Personal Unit",
-        "option_c": "Central Peripheral Universal",
-        "option_d": "Core Process Unit",
-        "correct_answer": "A"
+        "correct_answer": "B",
+        "isUsed": true
     },
     {
         "category": "IT",
@@ -52,7 +35,8 @@
         "option_b": "Madrid",
         "option_c": "Paris",
         "option_d": "Rome",
-        "correct_answer": "C"
+        "correct_answer": "C",
+        "isUsed": true
     },
     {
         "category": "IT",
@@ -71,7 +55,8 @@
         "option_b": "Printer",
         "option_c": "Keyboard",
         "option_d": "Speaker",
-        "correct_answer": "C"
+        "correct_answer": "C",
+        "isUsed": true
     },
     {
         "category": "General",
@@ -90,7 +75,8 @@
         "option_b": "To protect against malware",
         "option_c": "To speed up typing",
         "option_d": "To browse the web",
-        "correct_answer": "B"
+        "correct_answer": "B",
+        "isUsed": true
     },
     {
         "category": "General",
@@ -99,7 +85,8 @@
         "option_b": "Mars",
         "option_c": "Jupiter",
         "option_d": "Saturn",
-        "correct_answer": "B"
+        "correct_answer": "B",
+        "isUsed": true
     },
     {
         "category": "IT",
@@ -108,7 +95,8 @@
         "option_b": "Web World Wide",
         "option_c": "Wide World Website",
         "option_d": "World Web Way",
-        "correct_answer": "A"
+        "correct_answer": "A",
+        "isUsed": true
     },
     {
         "category": "General",
@@ -117,7 +105,8 @@
         "option_b": "Indian Ocean",
         "option_c": "Pacific Ocean",
         "option_d": "Arctic Ocean",
-        "correct_answer": "C"
+        "correct_answer": "C",
+        "isUsed": true
     },
     {
         "category": "History",
@@ -126,6 +115,7 @@
         "option_b": "4 yr",
         "option_c": "5 yr",
         "option_d": "7 yr",
-        "correct_answer": "C"
+        "correct_answer": "C",
+        "isUsed": true
     }
 ]

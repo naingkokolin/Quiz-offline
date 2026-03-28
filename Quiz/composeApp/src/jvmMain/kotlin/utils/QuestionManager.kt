@@ -234,4 +234,22 @@ object QuestionManager {
             e.printStackTrace()
         }
     }
+
+    fun importQuestionsFromFile(file: File) {
+        try {
+            if (!file.exists()) return
+
+            val jsonContent = file.readText()
+            // မင်းရဲ့ jsonWorker ကို သုံးပြီး decode လုပ်မယ်
+            val newQuestions = jsonWorker.decodeFromString<List<Question>>(jsonContent)
+
+            val currentQuestions = getAllQuestions().toMutableList()
+            currentQuestions.addAll(newQuestions)
+
+            saveAllQuestions(currentQuestions)
+            println("Imported ${newQuestions.size} questions from ${file.name}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

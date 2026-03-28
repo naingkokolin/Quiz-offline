@@ -38,8 +38,11 @@ fun QuizScreen(onBack: () -> Unit) {
     var showAnswer by remember { mutableStateOf(false) }
     var isTimeUp by remember { mutableStateOf(false) }
 
+    var showExitDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        val loadedQuestions = QuestionManager.getAllQuestions()
+        val loadedQuestions = QuestionManager.getAllQuestions().filter { !it.isUsed }
+
         if (loadedQuestions.isNotEmpty()) {
             val shuffled = loadedQuestions.shuffled()
             val limit = settings.SettingsManager.load().questionLimit
@@ -48,10 +51,41 @@ fun QuizScreen(onBack: () -> Unit) {
         }
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            SoundPlayer.stop()
+        }
+    }
+
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text("Quit Quiz?", fontWeight = FontWeight.Bold) },
+            text = { Text("Are you sure you want to exit? Your progress for this session will be lost.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExitDialog = false
+                        SoundPlayer.stop()
+                        onBack()
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
+                ) { Text("Exit", color = Color.White) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) { Text("Cancel") }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
     val primaryGradient = Brush.verticalGradient(listOf(Color(0xFF2E1A6B), Color(0xFF100A2C)))
 
     Box(modifier = Modifier.fillMaxSize().background(primaryGradient)) {
-        IconButton(onClick = onBack, modifier = Modifier.padding(20.dp).align(Alignment.TopStart)) {
+        IconButton(
+            onClick = {
+                if (isStarted) showExitDialog = true else onBack()
+            }, modifier = Modifier.padding(20.dp).align(Alignment.TopStart)) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
         }
 
@@ -159,7 +193,7 @@ fun QuizScreen(onBack: () -> Unit) {
                                 key = currentQuestionIndex,
                                 onFinish = {
                                     isTimeUp = true
-                                    SoundPlayer.play("timeup.wav")
+//                                    SoundPlayer.play("timeup.wav")
                                 },
                                 playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
                             )
