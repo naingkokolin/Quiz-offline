@@ -21,11 +21,10 @@ import javax.sound.sampled.Clip
 //}
 
 object SoundPlayer {
-    private var clip: Clip? = null // Clip ကို reference သိမ်းထားဖို့ variable ထည့်မယ်
+    private var clip: Clip? = null
 
     fun play(sound: String) {
         try {
-            // အရင်ပွင့်နေတဲ့ sound ရှိရင် ပိတ်လိုက်မယ်
             stop()
 
             val inputStream = javaClass.classLoader.getResourceAsStream(sound)
@@ -47,9 +46,9 @@ object SoundPlayer {
         try {
             clip?.let {
                 if (it.isRunning) {
-                    it.stop() // အသံကို ရပ်မယ်
+                    it.stop()
                 }
-                it.close() // resource ကို ပြန်ပိတ်မယ်
+                it.close()
             }
             clip = null
         } catch (e: Exception) {

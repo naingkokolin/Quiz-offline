@@ -10,25 +10,6 @@
         "isUsed": true
     },
     {
-        "category": "IT",
-        "question": "Which of these is an Operating System?",
-        "option_a": "Google",
-        "option_b": "Windows",
-        "option_c": "Facebook",
-        "option_d": "Intel",
-        "correct_answer": "B",
-        "isUsed": true
-    },
-    {
-        "category": "IT",
-        "question": "Which of these is an Operating System?",
-        "option_a": "Google",
-        "option_b": "Windows",
-        "option_c": "Facebook",
-        "option_d": "Intel",
-        "correct_answer": "B"
-    },
-    {
         "category": "General",
         "question": "What is the capital of France?",
         "option_a": "Berlin",
