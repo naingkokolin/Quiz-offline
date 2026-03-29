@@ -15,7 +15,9 @@ data class Settings(
 )
 
 object SettingsManager {
-    private val file = File("settings.json")
+    private val appDataPath = System.getenv("APPDATA") ?: System.getProperty("user.home")
+    private val appFolder = File(appDataPath, "QuizTournament").apply { mkdirs() }
+    private val file = File(appFolder, "settings.json")
 
     private val json = Json {
         ignoreUnknownKeys = true
