@@ -1,5 +1,6 @@
 package org.mst_college.project.quiz.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,20 +14,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import model.User
+import org.jetbrains.compose.resources.painterResource
+import quiz.composeapp.generated.resources.Res
+import quiz.composeapp.generated.resources.logo
 import settings.SettingsManager
+import utils.ImageUtils
 import kotlin.system.exitProcess
 
 @Composable
 fun HomeScreen(
+    loggedInUser: User,
     onQuiz: () -> Unit,
     onJudge: () -> Unit,
     onSettings: () -> Unit
 ) {
     val settings = remember { SettingsManager.load() }
+
+    val logoPainter: Painter = if (settings.logoPath != null) {
+        val bitmap = ImageUtils.loadImageFromPath(settings.logoPath)
+        if (bitmap != null) BitmapPainter(bitmap) else painterResource(Res.drawable.logo)
+    } else {
+        painterResource(Res.drawable.logo) // Default
+    }
 
     val backgroundGradient = Brush.horizontalGradient(
         colors = listOf(Color(0xFF0D47A1), Color(0xFF001233))
@@ -46,11 +62,17 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Center
         ) {
             // TODO: logoPath instead of image
-            Icon(
-                imageVector = Icons.Default.EmojiEvents,
-                contentDescription = "Logo",
-                modifier = Modifier.size(150.dp),
-                tint = Color(0xFFFFD700)
+//            Icon(
+//                imageVector = Icons.Default.EmojiEvents,
+//                contentDescription = "Logo",
+//                modifier = Modifier.size(150.dp),
+//                tint = Color(0xFFFFD700)
+//            )
+
+            Image(
+                painter = logoPainter,
+                contentDescription = "App Logo",
+                modifier = Modifier.size(120.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -77,8 +99,11 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             MenuButton("Start Quiz", Icons.Default.PlayArrow, Color(0xFF4CAF50), onQuiz)
-            MenuButton("Judge Panel", Icons.Default.Groups, Color(0xFF2196F3), onJudge)
-            MenuButton("Settings", Icons.Default.Settings, Color(0xFF607D8B), onSettings)
+
+            if (loggedInUser.role == "ADMIN") {
+                MenuButton("Judge Panel", Icons.Default.Groups, Color(0xFF2196F3), onJudge)
+                MenuButton("Settings", Icons.Default.Settings, Color(0xFF607D8B), onSettings)
+            }
 
             Divider(color = Color.White.copy(alpha = 0.2f), thickness = 1.dp, modifier = Modifier.width(280.dp).padding(vertical = 10.dp))
 

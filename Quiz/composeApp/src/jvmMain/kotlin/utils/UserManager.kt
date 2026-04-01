@@ -18,6 +18,9 @@ object UserManager {
 
     private val userFile = File(appFolder, "users.json")
 
+    private const val ADMIN_USER = "admin"
+    private const val ADMIN_PASS = "admin@quiz"
+
     private fun hashPassword(password: String): String {
         val bytes = password.toByteArray()
         val md = MessageDigest.getInstance("SHA-256")
@@ -27,12 +30,17 @@ object UserManager {
 
     fun register(username: String, password: String): Boolean {
         val users = getAllUsers().toMutableList()
+
+        val lowerUser = username.lowercase()
+        if (lowerUser == ADMIN_USER) return false
+
         if (users.any { it.username == username }) return false
 
         val newUser = User(
             user_id = users.size + 1,
             username = username,
-            password = hashPassword(password)
+            password = hashPassword(password),
+            role = "USER"
         )
 
         users.add(newUser)
@@ -41,6 +49,11 @@ object UserManager {
     }
 
     fun login(username: String, password: String): User? {
+
+        if (username == ADMIN_USER && password == ADMIN_PASS) {
+            return User(0, ADMIN_USER, hashPassword(ADMIN_PASS), "ADMIN")
+        }
+
         val users = getAllUsers()
         val inputHash = hashPassword(password)
         return users.find { it.username == username && it.password == inputHash }

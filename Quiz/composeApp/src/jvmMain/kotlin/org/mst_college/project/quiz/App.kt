@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -22,6 +25,8 @@ fun App() {
     val navigationStack = remember { mutableStateListOf(Screen.Login) }
     val currentScreen = navigationStack.last()
 
+    var currentUser by remember { mutableStateOf<model.User?>(null) }
+
     val focusRequester = remember { FocusRequester() }
 
     val goBack = {
@@ -34,7 +39,8 @@ fun App() {
         navigationStack.add(nextScreen)
     }
 
-    val loginSuccess = {
+    val loginSuccess = { user: model.User ->
+        currentUser = user
         navigationStack.clear()
         navigationStack.add(Screen.Welcome)
     }
@@ -79,10 +85,10 @@ fun App() {
 //                java.lang.System.exit(0)
 //            }
 //        }
-        Column(modifier = Modifier.fillMaxSize().padding(top = 40.dp)) {
+        Column(modifier = Modifier.fillMaxSize()) {
             when (currentScreen) {
                 Screen.Login -> LoginScreen(
-                    onLoginSuccess = { loginSuccess() },
+                    onLoginSuccess = { user -> loginSuccess(user) },
                     onNavigateToRegister = { navigateTo(Screen.Register) }
                 )
 
@@ -96,11 +102,20 @@ fun App() {
                     navigationStack.add(Screen.Home)
                 }
 
-                Screen.Home -> HomeScreen(
-                    onQuiz = { navigateTo(Screen.Quiz) },
-                    onJudge = { navigateTo(Screen.JudgePanel) },
-                    onSettings = { navigateTo(Screen.Settings) }
-                )
+                Screen.Home -> {
+                    // currentUser ရှိမှ Home ကို ပြမယ်၊ မရှိရင် Login ကို ပြန်သွားမယ်
+                    currentUser?.let { user ->
+                        HomeScreen(
+                            loggedInUser = user, // ဒီမှာ parameter ပို့ပေးရပါမယ်
+                            onQuiz = { navigateTo(Screen.Quiz) },
+                            onJudge = { navigateTo(Screen.JudgePanel) },
+                            onSettings = { navigateTo(Screen.Settings) }
+                        )
+                    } ?: run {
+                        navigationStack.clear()
+                        navigationStack.add(Screen.Login)
+                    }
+                }
 
                 Screen.Quiz -> QuizScreen(onBack = goBack)
                 Screen.JudgePanel -> JudgePanel(onBack = goBack)

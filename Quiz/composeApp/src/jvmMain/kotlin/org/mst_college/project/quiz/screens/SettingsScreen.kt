@@ -15,18 +15,20 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import settings.Settings
 import settings.SettingsManager
+import java.awt.FileDialog
+import java.awt.Frame
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(onBack: () -> Unit) {
     var title by remember { mutableStateOf("") }
-    var logoPath by remember { mutableStateOf("") }
+    var logoPath by remember { mutableStateOf<String?>(null) }
     var questionLimit by remember { mutableStateOf("10") }
     var timerSeconds by remember { mutableStateOf("30") }
 
-    // Snackbar ပြဖို့အတွက် state
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope() // Snackbar က suspend function ဖြစ်လို့ scope လိုတယ်
+    val scope = rememberCoroutineScope()
 
     // Load existing settings
     LaunchedEffect(Unit) {
@@ -38,7 +40,7 @@ fun SettingsScreen(onBack: () -> Unit) {
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }, // Snackbar ပြမယ့်နေရာ သတ်မှတ်ခြင်း
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Settings", fontWeight = FontWeight.Bold) },
@@ -71,15 +73,39 @@ fun SettingsScreen(onBack: () -> Unit) {
                 leadingIcon = { Icon(Icons.Default.Title, null) }
             )
 
-            OutlinedTextField(
-                value = logoPath,
-                onValueChange = { logoPath = it },
-                label = { Text("Logo Image Path (Optional)") },
-                modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Default.Image, null) }
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Application Logo", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            // Dark Mode Toggle ကို ဖြုတ်လိုက်ပါပြီ
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedTextField(
+                        value = logoPath ?: "No logo selected",
+                        onValueChange = { }, // Read-only ဖြစ်အောင် ထားမယ်
+                        readOnly = true,
+                        modifier = Modifier.weight(1f),
+                        leadingIcon = { Icon(Icons.Default.Image, null) }
+                    )
+
+                    Button(
+                        onClick = {
+                            // Windows File Explorer ကို ခေါ်တဲ့ Logic
+                            val fileDialog = FileDialog(null as Frame?, "Select Logo Image", FileDialog.LOAD)
+                            fileDialog.file = "*.jpg;*.png;*.jpeg" // ပုံတွေပဲ ရွေးခိုင်းမယ်
+                            fileDialog.isVisible = true
+
+                            if (fileDialog.directory != null && fileDialog.file != null) {
+                                logoPath = "${fileDialog.directory}${fileDialog.file}"
+                            }
+                        },
+                        shape = ShapeDefaults.Small
+                    ) {
+                        Text("Browse")
+                    }
+                }
+            }
 
             HorizontalDivider()
 
@@ -109,18 +135,15 @@ fun SettingsScreen(onBack: () -> Unit) {
             // --- Save Button ---
             Button(
                 onClick = {
-                    // ၁။ Settings သိမ်းမယ်
                     SettingsManager.save(
                         Settings(
                             title = title,
                             logoPath = logoPath,
                             questionLimit = questionLimit.toIntOrNull() ?: 10,
                             timerSeconds = timerSeconds.toIntOrNull() ?: 30,
-                            isDarkMode = true // Default အနေနဲ့ true ပဲ ထားလိုက်မယ်
                         )
                     )
 
-                    // ၂။ Snackbar ပြမယ်
                         scope.launch {
                             snackbarHostState.showSnackbar(
                                 message = "Settings saved successfully!",

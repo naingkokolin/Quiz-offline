@@ -18,10 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import model.User
 import utils.UserManager
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
+fun LoginScreen(onLoginSuccess: (User) -> Unit, onNavigateToRegister: () -> Unit) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
@@ -57,7 +58,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
 
                             if (user != null) {
                                 // Login အောင်မြင်ရင် Welcome Screen ကို သွားမယ်
-                                onLoginSuccess()
+                                onLoginSuccess(user)
                             } else {
                                 // Username မှားတာ သို့မဟုတ် Password မကိုက်တာ
                                 errorMessage = "Invalid username or password"
