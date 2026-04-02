@@ -21,8 +21,8 @@ import settings.SettingsManager
 
 @Composable
 fun CircularTimer(
-    totalTime: Int = SettingsManager.load().timerSeconds, // Settings ကလာမယ့် အချိန်
-    key: Int,            // မေးခွန်းနံပါတ်ကို key အဖြစ်သုံးမယ်
+    totalTime: Int = SettingsManager.load().timerSeconds,
+    key: Int,
     onFinish: () -> Unit,
     playCountdown: () -> Unit
 ) {
@@ -33,7 +33,6 @@ fun CircularTimer(
         animationSpec = tween(1000)
     )
 
-    // key ပြောင်းသွားရင် ဒီ Effect က အစကနေ ပြန်ပွင့်လာမယ်
     LaunchedEffect(key) {
         while (timeLeft > 0) {
             delay(1000)
@@ -46,7 +45,6 @@ fun CircularTimer(
         onFinish()
     }
 
-    // အချိန်နည်းလာရင် အရောင်ကို အနီဘက် ပြောင်းပေးမယ်
     val timerColor = when {
         timeLeft > 10 -> Color(0xFF00E676) // Green
         timeLeft > 5 -> Color(0xFFFFD600)  // Yellow
@@ -55,7 +53,6 @@ fun CircularTimer(
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(220.dp)) {
         Canvas(Modifier.matchParentSize()) {
-            // Background Circle (မှိန်မှိန်လေး)
             drawArc(
                 color = Color.White.copy(alpha = 0.1f),
                 startAngle = -90f,
@@ -64,7 +61,6 @@ fun CircularTimer(
                 style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
             )
 
-            // Progress Arc with Gradient
             drawArc(
                 brush = Brush.sweepGradient(
                     0.0f to timerColor.copy(alpha = 0.5f),
@@ -77,7 +73,6 @@ fun CircularTimer(
             )
         }
 
-        // Timer Text with Shadow/Glow effect လိုမျိုး
         Text(
             text = "$timeLeft",
             fontSize = 56.sp,

@@ -3,7 +3,6 @@ package org.mst_college.project.quiz.screens
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -161,7 +160,6 @@ fun JudgePanel(onBack: () -> Unit) {
         // --- RIGHT SIDE: QUESTION Management ---
         Column(modifier = Modifier.weight(0.58f).padding(top = 25.dp, end = 25.dp, bottom = 25.dp)) {
 
-            // Header Row: Title နဲ့ Import Button ကို တစ်တန်းတည်းထားမယ်
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -172,7 +170,6 @@ fun JudgePanel(onBack: () -> Unit) {
                     Text("${allQuestions.size} questions in Database", color = Color(0xFF627D98))
                 }
 
-                // Import Button ကို ညာဘက်မှာ ထားမယ်
                 Button(
                     onClick = { pickJsonFile()?.let { QuestionManager.importQuestionsFromFile(it); refreshQuestions() } },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
@@ -187,7 +184,6 @@ fun JudgePanel(onBack: () -> Unit) {
 
             Spacer(Modifier.height(20.dp))
 
-            // Tab Selector: Available နဲ့ Used ခွဲဖို့ (Title ရဲ့ အောက်မှာ သီးသန့် Row တစ်ခုအနေနဲ့ ထားမယ်)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
@@ -334,7 +330,7 @@ fun AdminQuestionItem(index: Int, q: Question, onEdit: () -> Unit, onDelete: () 
         Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(
                 modifier = Modifier
-                    .size(55.dp) // size ကို နည်းနည်းလေး ပိုကြီးပေးရင် ပိုကြည့်ကောင်းတယ်
+                    .size(55.dp)
                     .background(Color(0xFF243B55).copy(alpha = 0.05f), RoundedCornerShape(12.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -348,7 +344,6 @@ fun AdminQuestionItem(index: Int, q: Question, onEdit: () -> Unit, onDelete: () 
                 Text(q.question, fontWeight = FontWeight.Bold, maxLines = 1, fontSize = 16.sp, color = Color(0xFF102A43))
             }
             if (q.isUsed) {
-                // Used ဖြစ်နေမှ ပေါ်မယ့် Restore Button (Used ထဲကထုတ်မယ်)
                 IconButton(onClick = onRestore) {
                     Icon(Icons.Default.SettingsBackupRestore, "Restore", tint = Color(0xFF4CAF50))
                 }

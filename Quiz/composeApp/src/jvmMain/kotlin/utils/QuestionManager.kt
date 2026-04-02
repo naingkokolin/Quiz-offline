@@ -18,8 +18,6 @@ object QuestionManager {
         prettyPrint = true
     }
 
-//    private val databaseFile = File("questions.json")
-
     fun markAsUsed(answeredQuestions: List<Question>) {
         val all = getAllQuestions().toMutableList()
         answeredQuestions.forEach { answered ->
@@ -93,8 +91,6 @@ object QuestionManager {
             e.printStackTrace()
         }
     }
-
-//    private val historyFile = File("quiz_history.json")
 
     fun saveRoundHistory(questions: List<Question>) {
         try {

@@ -61,13 +61,6 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // TODO: logoPath instead of image
-//            Icon(
-//                imageVector = Icons.Default.EmojiEvents,
-//                contentDescription = "Logo",
-//                modifier = Modifier.size(150.dp),
-//                tint = Color(0xFFFFD700)
-//            )
 
             Image(
                 painter = logoPainter,

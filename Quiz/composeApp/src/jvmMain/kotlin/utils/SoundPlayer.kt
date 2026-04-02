@@ -4,22 +4,6 @@ import java.io.BufferedInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 
-//object SoundPlayer {
-//
-//    fun play(sound: String) {
-//
-//        val url = SoundPlayer::class.java.getResource("/$sound")
-//
-//        val audioStream = AudioSystem.getAudioInputStream(url)
-//
-//        val clip = AudioSystem.getClip()
-//
-//        clip.open(audioStream)
-//
-//        clip.start()
-//    }
-//}
-
 object SoundPlayer {
     private var clip: Clip? = null
 

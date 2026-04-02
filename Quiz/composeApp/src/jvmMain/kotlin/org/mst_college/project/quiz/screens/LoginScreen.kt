@@ -6,10 +6,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.VerifiedUser
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,14 +54,11 @@ fun LoginScreen(onLoginSuccess: (User) -> Unit, onNavigateToRegister: () -> Unit
                         if (username.isBlank() || password.isBlank()) {
                             errorMessage = "Please enter both username and password"
                         } else {
-                            // UserManager ရဲ့ login function ကို လှမ်းခေါ်မယ်
                             val user = UserManager.login(username, password)
 
                             if (user != null) {
-                                // Login အောင်မြင်ရင် Welcome Screen ကို သွားမယ်
                                 onLoginSuccess(user)
                             } else {
-                                // Username မှားတာ သို့မဟုတ် Password မကိုက်တာ
                                 errorMessage = "Invalid username or password"
                             }
                         }

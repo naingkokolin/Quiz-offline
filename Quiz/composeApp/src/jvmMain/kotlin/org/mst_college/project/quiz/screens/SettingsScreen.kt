@@ -83,7 +83,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                 ) {
                     OutlinedTextField(
                         value = logoPath ?: "No logo selected",
-                        onValueChange = { }, // Read-only ဖြစ်အောင် ထားမယ်
+                        onValueChange = { },
                         readOnly = true,
                         modifier = Modifier.weight(1f),
                         leadingIcon = { Icon(Icons.Default.Image, null) }
@@ -91,9 +91,8 @@ fun SettingsScreen(onBack: () -> Unit) {
 
                     Button(
                         onClick = {
-                            // Windows File Explorer ကို ခေါ်တဲ့ Logic
                             val fileDialog = FileDialog(null as Frame?, "Select Logo Image", FileDialog.LOAD)
-                            fileDialog.file = "*.jpg;*.png;*.jpeg" // ပုံတွေပဲ ရွေးခိုင်းမယ်
+                            fileDialog.file = "*.jpg;*.png;*.jpeg"
                             fileDialog.isVisible = true
 
                             if (fileDialog.directory != null && fileDialog.file != null) {

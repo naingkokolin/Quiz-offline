@@ -24,7 +24,6 @@ import utils.ImageUtils
 
 @Composable
 fun WelcomeScreen(next: () -> Unit) {
-    // Settings ကို Load လုပ်မယ်
     val settings = remember { SettingsManager.load() }
 
     val logoPainter: Painter = if (settings.logoPath != null) {
@@ -50,12 +49,6 @@ fun WelcomeScreen(next: () -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-//            Image(
-//                painter = painterResource(Res.drawable.logo),
-//                contentDescription = null,
-//                modifier = Modifier.size(160.dp)
-//            )
-
             Image(
                 painter = logoPainter,
                 contentDescription = "App Logo",
@@ -64,7 +57,6 @@ fun WelcomeScreen(next: () -> Unit) {
 
             Spacer(Modifier.height(20.dp))
 
-            // ပုံသေစာသားနေရာမှာ settings.title ကို အစားထိုးလိုက်တယ်
             Text(
                 text = settings.title,
                 fontSize = 36.sp,
