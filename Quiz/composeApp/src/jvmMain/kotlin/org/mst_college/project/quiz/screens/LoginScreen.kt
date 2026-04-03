@@ -28,7 +28,7 @@ fun LoginScreen(onLoginSuccess: (User) -> Unit, onNavigateToRegister: () -> Unit
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
-    val bgGradient = Brush.verticalGradient(listOf(Color(0xFF1A237E), Color(0xFF121212)))
+    val bgGradient = Brush.verticalGradient(listOf(Color(0xFFC9AB32), Color(0xFFC7ADAD)))
 
     Box(modifier = Modifier.fillMaxSize().background(bgGradient), contentAlignment = Alignment.Center) {
         Card(
@@ -38,8 +38,8 @@ fun LoginScreen(onLoginSuccess: (User) -> Unit, onNavigateToRegister: () -> Unit
             elevation = 0.dp
         ) {
             Column(modifier = Modifier.padding(30.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Welcome Back", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                Text("Login to your account", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
+                Text("Welcome Back", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                Text("Login to your account", color = Color.Black.copy(alpha = 0.6f), fontSize = 14.sp)
 
                 Spacer(Modifier.height(30.dp))
 
@@ -67,7 +67,7 @@ fun LoginScreen(onLoginSuccess: (User) -> Unit, onNavigateToRegister: () -> Unit
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(Color(0xFF3F51B5))
                 ) {
-                    Text("LOGIN", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("LOGIN", color = Color.Black, fontWeight = FontWeight.Bold)
                 }
 
                 if (errorMessage.isNotEmpty()) {
@@ -80,7 +80,7 @@ fun LoginScreen(onLoginSuccess: (User) -> Unit, onNavigateToRegister: () -> Unit
                 }
 
                 TextButton(onClick = onNavigateToRegister) {
-                    Text("Don't have an account? Register", color = Color.Cyan)
+                    Text("Don't have an account? Register", color = Color.Black)
                 }
             }
         }

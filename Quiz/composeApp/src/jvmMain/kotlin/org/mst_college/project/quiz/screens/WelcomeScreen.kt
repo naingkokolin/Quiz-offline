@@ -42,7 +42,7 @@ fun WelcomeScreen(next: () -> Unit) {
         modifier = Modifier.fillMaxSize()
             .background(
                 Brush.linearGradient(
-                    listOf(Color(0xFF141E30), Color(0xFF243B55))
+                    listOf(Color(0xFFADA961), Color(0xFFA7A577))
                 )
             ),
         contentAlignment = Alignment.Center

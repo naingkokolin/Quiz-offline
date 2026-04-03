@@ -45,7 +45,7 @@ fun HomeScreen(
     }
 
     val backgroundGradient = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF0D47A1), Color(0xFF001233))
+        colors = listOf(Color(0xFF3171D0), Color(0xFF485C7D))
     )
 
     Row(
@@ -91,16 +91,16 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            MenuButton("Start Quiz", Icons.Default.PlayArrow, Color(0xFF4CAF50), onQuiz)
+            MenuButton("Start Quiz", Icons.Default.PlayArrow, Color(0xFFA2A7A2), onQuiz)
 
             if (loggedInUser.role == "ADMIN") {
-                MenuButton("Judge Panel", Icons.Default.Groups, Color(0xFF2196F3), onJudge)
-                MenuButton("Settings", Icons.Default.Settings, Color(0xFF607D8B), onSettings)
+                MenuButton("Questions Panel", Icons.Default.Groups, Color(0xFFA2A7A2), onJudge)
+                MenuButton("Settings", Icons.Default.Settings, Color(0xFFA2A7A2), onSettings)
             }
 
             Divider(color = Color.White.copy(alpha = 0.2f), thickness = 1.dp, modifier = Modifier.width(280.dp).padding(vertical = 10.dp))
 
-            MenuButton("Quit App", Icons.AutoMirrored.Filled.ExitToApp, Color(0xFFD32F2F), {
+            MenuButton("Quit App", Icons.AutoMirrored.Filled.ExitToApp, Color(0xFFA2A7A2), {
                 exitProcess(0)
             })
         }
@@ -129,8 +129,8 @@ fun MenuButton(
             Spacer(modifier = Modifier.width(20.dp))
             Text(
                 text = text,
-                color = Color.White,
-                fontSize = 20.sp,
+                color = Color.Black,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
         }

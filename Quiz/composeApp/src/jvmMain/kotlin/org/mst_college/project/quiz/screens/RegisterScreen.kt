@@ -23,7 +23,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit, onNavigateToLogin: () -> Unit)
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
-    val bgGradient = Brush.verticalGradient(listOf(Color(0xFF4527A0), Color(0xFF121212)))
+    val bgGradient = Brush.verticalGradient(listOf(Color(0xFFF3EA73), Color(0xFFF8E593)))
 
     Box(modifier = Modifier.fillMaxSize().background(bgGradient), contentAlignment = Alignment.Center) {
         Card(
@@ -32,7 +32,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit, onNavigateToLogin: () -> Unit)
             backgroundColor = Color.White.copy(alpha = 0.1f)
         ) {
             Column(modifier = Modifier.padding(30.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Create Account", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text("Create Account", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                 Spacer(Modifier.height(25.dp))
 
                 AuthTextField(value = name, label = "Full Name", onValueChange = { name = it }, icon = Icons.Default.Person)
@@ -68,7 +68,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit, onNavigateToLogin: () -> Unit)
                 }
 
                 TextButton(onClick = onNavigateToLogin) {
-                    Text("Already have an account? Login", color = Color.Cyan)
+                    Text("Already have an account? Login", color = Color.Black)
                 }
             }
         }
@@ -86,17 +86,17 @@ fun AuthTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, color = Color.White.copy(alpha = 0.7f)) },
-        leadingIcon = { Icon(icon, null, tint = Color.Cyan) },
+        label = { Text(label, color = Color.Black.copy(alpha = 0.7f)) },
+        leadingIcon = { Icon(icon, null, tint = Color.Black) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         singleLine = true,
         visualTransformation = if (isPassword) androidx.compose.ui.text.input.PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color.Cyan,
+            focusedBorderColor = Color.Black,
             unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-            textColor = Color.White,
-            cursorColor = Color.Cyan
+            textColor = Color.Black,
+            cursorColor = Color.Black
         )
     )
 }
