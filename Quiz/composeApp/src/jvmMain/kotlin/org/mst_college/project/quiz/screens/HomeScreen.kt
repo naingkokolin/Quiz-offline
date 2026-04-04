@@ -45,7 +45,8 @@ fun HomeScreen(
     }
 
     val backgroundGradient = Brush.horizontalGradient(
-        colors = listOf(Color(0xFF3171D0), Color(0xFF485C7D))
+//        colors = listOf(Color(0xFF3171D0), Color(0xFF456FAF))
+        listOf(Color(0xFFADA961), Color(0xFFA7A577))
     )
 
     Row(
@@ -79,7 +80,7 @@ fun HomeScreen(
             )
 
             Text(
-                text = "Tournament Edition v1.0",
+                text = "Quiz Tournament v1.0",
                 color = Color.White.copy(alpha = 0.7f),
                 fontSize = 18.sp
             )
@@ -116,7 +117,7 @@ fun MenuButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.width(320.dp).height(65.dp),
+        modifier = Modifier.width(360.dp).height(65.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor = color),
         elevation = ButtonDefaults.elevation(defaultElevation = 10.dp)

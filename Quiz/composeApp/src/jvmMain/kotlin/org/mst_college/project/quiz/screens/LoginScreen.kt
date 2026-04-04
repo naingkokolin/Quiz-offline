@@ -28,7 +28,10 @@ fun LoginScreen(onLoginSuccess: (User) -> Unit, onNavigateToRegister: () -> Unit
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
-    val bgGradient = Brush.verticalGradient(listOf(Color(0xFFC9AB32), Color(0xFFC7ADAD)))
+    val bgGradient = Brush.verticalGradient(
+//        listOf(Color(0xFF3171D0), Color(0xFF456FAF))
+        listOf(Color(0xFFADA961), Color(0xFFA7A577))
+    )
 
     Box(modifier = Modifier.fillMaxSize().background(bgGradient), contentAlignment = Alignment.Center) {
         Card(
@@ -65,7 +68,7 @@ fun LoginScreen(onLoginSuccess: (User) -> Unit, onNavigateToRegister: () -> Unit
                     },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF3F51B5))
+                    colors = ButtonDefaults.buttonColors(Color(0xFF5670FC))
                 ) {
                     Text("LOGIN", color = Color.Black, fontWeight = FontWeight.Bold)
                 }

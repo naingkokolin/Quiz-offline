@@ -43,6 +43,7 @@ fun WelcomeScreen(next: () -> Unit) {
             .background(
                 Brush.linearGradient(
                     listOf(Color(0xFFADA961), Color(0xFFA7A577))
+//                    listOf(Color(0xFF3171D0), Color(0xFF456FAF))
                 )
             ),
         contentAlignment = Alignment.Center

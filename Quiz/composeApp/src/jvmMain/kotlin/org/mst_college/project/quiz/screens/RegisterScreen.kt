@@ -3,6 +3,8 @@ package org.mst_college.project.quiz.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -23,7 +25,10 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit, onNavigateToLogin: () -> Unit)
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
-    val bgGradient = Brush.verticalGradient(listOf(Color(0xFFF3EA73), Color(0xFFF8E593)))
+    val bgGradient = Brush.verticalGradient(
+//        listOf(Color(0xFF3171D0), Color(0xFF456FAF))
+        listOf(Color(0xFFADA961), Color(0xFFA7A577))
+    )
 
     Box(modifier = Modifier.fillMaxSize().background(bgGradient), contentAlignment = Alignment.Center) {
         Card(
