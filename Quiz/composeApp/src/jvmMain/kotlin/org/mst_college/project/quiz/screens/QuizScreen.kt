@@ -74,7 +74,7 @@ fun QuizScreen(onBack: () -> Unit) {
         )
     }
 
-    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFF2E1A6B), Color(0xFF100A2C)))
+    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFFADA961), Color(0xFFA7A577)))
 
     Box(modifier = Modifier.fillMaxSize().background(primaryGradient)) {
         IconButton(
@@ -100,7 +100,7 @@ fun QuizScreen(onBack: () -> Unit) {
                     Text(
                         "QUESTION ${currentQuestionIndex + 1} OF ${allQuestions.size}",
                         fontSize = 24.sp,
-                        color = Color.Cyan.copy(alpha = 0.8f),
+                        color = Color.Black.copy(alpha = 0.8f),
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 2.sp
                     )
@@ -116,7 +116,7 @@ fun QuizScreen(onBack: () -> Unit) {
                             text = currentQ.question,
                             fontSize = 46.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
+                            color = Color.Black,
                             lineHeight = 45.sp,
                             textAlign = TextAlign.Center
                         )
@@ -155,7 +155,7 @@ fun QuizScreen(onBack: () -> Unit) {
                                         text = currentQ.correct_answer ?: "?",
                                         fontSize = 140.sp,
                                         fontWeight = FontWeight.Black,
-                                        color = Color.White
+                                        color = Color.Black
                                     )
                                 }
                                 Spacer(Modifier.height(20.dp))
@@ -163,7 +163,7 @@ fun QuizScreen(onBack: () -> Unit) {
                                     "CORRECT ANSWER",
                                     fontSize = 28.sp,
                                     fontWeight = FontWeight.ExtraBold,
-                                    color = Color(0xFF4CAF50)
+                                    color = Color(0xFF00FF19)
                                 )
                             }
                         }
@@ -265,9 +265,9 @@ fun QuizOption(letter: String, text: String) {
             modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "$letter:", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.Cyan)
+            Text(text = "$letter:", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.Blue)
             Spacer(Modifier.width(20.dp))
-            Text(text = text, fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+            Text(text = text, fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
         }
     }
 }

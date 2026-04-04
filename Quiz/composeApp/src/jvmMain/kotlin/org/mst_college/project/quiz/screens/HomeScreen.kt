@@ -66,7 +66,7 @@ fun HomeScreen(
             Image(
                 painter = logoPainter,
                 contentDescription = "App Logo",
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(160.dp)
             )
 
             Spacer(modifier = Modifier.height(20.dp))

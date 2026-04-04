@@ -114,19 +114,45 @@ object QuestionManager {
         }
     }
 
+//    fun importQuestionsFromFile(file: File) {
+//        try {
+//            if (!file.exists()) return
+//
+//            val jsonContent = file.readText()
+//
+//            val newQuestions = jsonWorker.decodeFromString<List<Question>>(jsonContent)
+//
+//            val currentQuestions = getAllQuestions().toMutableList()
+//            currentQuestions.addAll(newQuestions)
+//
+//            saveAllQuestions(currentQuestions)
+//            println("Imported ${newQuestions.size} questions from ${file.name}")
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
+
     fun importQuestionsFromFile(file: File) {
         try {
             if (!file.exists()) return
 
             val jsonContent = file.readText()
-
             val newQuestions = jsonWorker.decodeFromString<List<Question>>(jsonContent)
 
             val currentQuestions = getAllQuestions().toMutableList()
-            currentQuestions.addAll(newQuestions)
 
-            saveAllQuestions(currentQuestions)
-            println("Imported ${newQuestions.size} questions from ${file.name}")
+            val existingQuestionTexts = currentQuestions.map { it.question }.toSet()
+
+            val uniqueNewQuestions = newQuestions.filter { it.question !in existingQuestionTexts }
+
+            if (uniqueNewQuestions.isNotEmpty()) {
+                currentQuestions.addAll(uniqueNewQuestions)
+                saveAllQuestions(currentQuestions)
+                println("Imported ${uniqueNewQuestions.size} unique questions. (${newQuestions.size - uniqueNewQuestions.size} duplicates skipped)")
+            } else {
+                println("No new unique questions found in the file.")
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
