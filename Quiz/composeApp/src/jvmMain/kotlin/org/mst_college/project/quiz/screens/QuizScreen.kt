@@ -74,7 +74,9 @@ fun QuizScreen(onBack: () -> Unit) {
         )
     }
 
-    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFFADA961), Color(0xFFA7A577)))
+//    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFFADA961), Color(0xFFA7A577)))
+
+    val primaryGradient = Brush.verticalGradient(listOf(Color(0xFF47473F), Color(0xFF585858)))
 
     Box(modifier = Modifier.fillMaxSize().background(primaryGradient)) {
         IconButton(
@@ -92,20 +94,61 @@ fun QuizScreen(onBack: () -> Unit) {
                 val currentQ = allQuestions[currentQuestionIndex]
 
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 60.dp),
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 40.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        if (!isTimeUp && !showAnswer) {
+                            CircularTimer(
+                                totalTime = settings.SettingsManager.load().timerSeconds,
+                                key = currentQuestionIndex,
+                                onFinish = {
+                                    isTimeUp = true
+                                },
+                                playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
+                            )
+                        }
+                    }
+
                     // Question Counter
                     Text(
                         "QUESTION ${currentQuestionIndex + 1} OF ${allQuestions.size}",
                         fontSize = 24.sp,
-                        color = Color.Black.copy(alpha = 0.8f),
+                        color = Color.White.copy(alpha = 0.8f),
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 2.sp
                     )
 
-                    Spacer(Modifier.height(30.dp))
+//                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+//                        AnimatedVisibility(
+//                            visible = !isTimeUp,
+//                            enter = fadeIn() + expandVertically(),
+//                            exit = fadeOut() + shrinkVertically()
+//                        ) {
+//                            Text(
+//                                text = currentQ.question,
+//                                fontSize = 36.sp, // 46 to 40
+//                                fontWeight = FontWeight.Bold,
+//                                color = Color.Black,
+//                                lineHeight = 28.sp, // 45 to 32
+//                                textAlign = TextAlign.Center
+//                            )
+//                        }
+//                        if (!isTimeUp && !showAnswer) {
+//                            CircularTimer(
+//                                totalTime = settings.SettingsManager.load().timerSeconds,
+//                                key = currentQuestionIndex,
+//                                onFinish = {
+//                                    isTimeUp = true
+//                                },
+//                                playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
+//                            )
+//                        }
+//                    }
+
+                    Spacer(Modifier.height(10.dp)) // 30
 
                     AnimatedVisibility(
                         visible = !isTimeUp,
@@ -114,18 +157,18 @@ fun QuizScreen(onBack: () -> Unit) {
                     ) {
                         Text(
                             text = currentQ.question,
-                            fontSize = 46.sp,
+                            fontSize = 42.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            lineHeight = 45.sp,
-                            textAlign = TextAlign.Center
+                            color = Color.White,
+                            lineHeight = 48.sp,
+                            textAlign = TextAlign.Start
                         )
                     }
 
-                    Spacer(Modifier.height(40.dp))
+                    Spacer(Modifier.height(10.dp)) // from 40 to 10
 
                     // Answer / Options Area
-                    Box(modifier = Modifier.height(400.dp).widthIn(max = 850.dp), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.height(600.dp).widthIn(max = 1200.dp), contentAlignment = Alignment.Center) { // 400 to 600 & 850 to 1000
                         this@Column.AnimatedVisibility(
                             visible = !isTimeUp && !showAnswer,
                             enter = fadeIn(),
@@ -155,7 +198,7 @@ fun QuizScreen(onBack: () -> Unit) {
                                         text = currentQ.correct_answer ?: "?",
                                         fontSize = 140.sp,
                                         fontWeight = FontWeight.Black,
-                                        color = Color.Black
+                                        color = Color.White
                                     )
                                 }
                                 Spacer(Modifier.height(20.dp))
@@ -173,7 +216,7 @@ fun QuizScreen(onBack: () -> Unit) {
                                 "TIME IS UP!",
                                 fontSize = 60.sp,
                                 fontWeight = FontWeight.Black,
-                                color = Color.Red
+                                color = Color(0xFFFF0005)
                             )
                         }
                     }
@@ -182,17 +225,16 @@ fun QuizScreen(onBack: () -> Unit) {
 
                     // Control Area
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.height(180.dp)) {
-                        if (!isTimeUp && !showAnswer) {
-                            CircularTimer(
-                                totalTime = settings.SettingsManager.load().timerSeconds,
-                                key = currentQuestionIndex,
-                                onFinish = {
-                                    isTimeUp = true
-//                                    SoundPlayer.play("timeup.wav")
-                                },
-                                playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
-                            )
-                        }
+//                        if (!isTimeUp && !showAnswer) {
+//                            CircularTimer(
+//                                totalTime = settings.SettingsManager.load().timerSeconds,
+//                                key = currentQuestionIndex,
+//                                onFinish = {
+//                                    isTimeUp = true
+//                                },
+//                                playCountdown = { SoundPlayer.play("10sec-countdown.wav") }
+//                            )
+//                        }
 
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             if (isTimeUp && !showAnswer) {
@@ -262,12 +304,12 @@ fun QuizOption(letter: String, text: String) {
         elevation = 0.dp
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 30.dp, vertical = 20.dp),
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "$letter:", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.Blue)
+            Text(text = "$letter:", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color(0xFF00FF19))
             Spacer(Modifier.width(20.dp))
-            Text(text = text, fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+            Text(text = text, fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFFFFFFFF))
         }
     }
 }

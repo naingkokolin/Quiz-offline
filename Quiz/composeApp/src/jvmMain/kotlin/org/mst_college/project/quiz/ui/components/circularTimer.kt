@@ -46,19 +46,19 @@ fun CircularTimer(
     }
 
     val timerColor = when {
-        timeLeft > 10 -> Color(0xFF00E676) // Green
+        timeLeft > 10 -> Color(0xFF29FF00) // Green
         timeLeft > 5 -> Color(0xFFFFD600)  // Yellow
         else -> Color(0xFFFF1744)          // Red
     }
 
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(220.dp)) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(100.dp)) { // 220 to 120
         Canvas(Modifier.matchParentSize()) {
             drawArc(
                 color = Color.White.copy(alpha = 0.1f),
                 startAngle = -90f,
                 sweepAngle = 360f,
                 useCenter = false,
-                style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
+                style = Stroke(width = 0.dp.toPx(), cap = StrokeCap.Round)
             )
 
             drawArc(
@@ -69,13 +69,13 @@ fun CircularTimer(
                 startAngle = -90f,
                 sweepAngle = 360 * progress,
                 useCenter = false,
-                style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
+                style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round)
             )
         }
 
         Text(
             text = "$timeLeft",
-            fontSize = 56.sp,
+            fontSize = 32.sp, // 42 to 30
             fontWeight = FontWeight.ExtraBold,
             color = timerColor
         )

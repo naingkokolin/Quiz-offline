@@ -49,9 +49,9 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.mst_college.project.quiz"
             packageVersion = "1.0.0"
-            packageName = "QuizTournament"
+            packageName = "Quiz Tournament"
 
-            packageVersion = "1.0.0"
+            packageVersion = "1.0.1"
 
             windows {
                 shortcut = true

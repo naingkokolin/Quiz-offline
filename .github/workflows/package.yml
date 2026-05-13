@@ -1,0 +1,31 @@
+name: Package Windows MSI
+
+on:
+  push:
+    branches: [ "main", "master" ] # main သို့မဟုတ် master branch ကို push လုပ်ရင် အလုပ်လုပ်မယ်
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build MSI with Gradle
+        run: ./gradlew :Quiz:packageMsi
+
+      - name: Upload MSI Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Quiz-Tournament
+          path: Quiz/build/compose/binaries/main/msi/*.msi
